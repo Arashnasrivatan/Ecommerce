@@ -3,10 +3,14 @@ const cors = require("cors");
 const response = require("./utils/response");
 const helmet = require("helmet");
 const { setHeaders } = require("./middlewares/setHeaders");
-const errorHandler = require("./middlewares/errorHandler");
+const { errorHandler } = require("./middlewares/errorHandler");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
 const passport = require("passport");
+const localStrategy = require("./strategies/localStrategy");
+const JwtAccessTokenStrategy = require("./strategies/JwtAccessTokenStrategy");
+const JwtRefreshTokenStrategy = require("./strategies/JwtRefreshTokenStrategy");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -33,8 +37,12 @@ app.use(cors());
 app.use(express.static(path.resolve(__dirname, "..", "public")));
 
 //* Passport
+passport.use(localStrategy);
+passport.use("accessToken", JwtAccessTokenStrategy);
+passport.use("refreshToken", JwtRefreshTokenStrategy);
 
 //* Routes
+app.use("/api/auth", authRoutes);
 
 //TODO Swagger
 

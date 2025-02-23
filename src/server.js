@@ -7,7 +7,10 @@ const mongoose = require("mongoose");
 async function startServer() {
   try {
     //* Connect To Mongo DB
-    await mongoose.connect(configs.db.mongo_uri);
+    await mongoose.connect(configs.db.mongo_uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
     console.log("MongoDB connected successfully");
 
@@ -18,7 +21,7 @@ async function startServer() {
       console.log(`Server started on port ${configs.port}`);
     });
   } catch (err) {
-    console.log(err);
+    console.log("server.js ->", err);
     await mongoose.disconnect();
     await redis.disconnect();
   }
