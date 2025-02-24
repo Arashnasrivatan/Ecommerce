@@ -32,6 +32,10 @@ const changeSchema = yup.object().shape({
 
 const profileSchema = yup.object().shape({});
 
+const banSchema = yup.object().shape({
+  banReason: yup.string().required("ban Reason is required").min(5).max(100),
+});
+
 const addAddressSchema = yup.object().shape({});
 
 const updateAddressSchema = yup.object().shape({});
@@ -39,6 +43,7 @@ const updateAddressSchema = yup.object().shape({});
 module.exports = {
   changeSchema,
   profileSchema,
+  banSchema,
   addAddressSchema,
   updateAddressSchema,
 };

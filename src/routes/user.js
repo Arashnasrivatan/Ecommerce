@@ -6,6 +6,7 @@ const validate = require("./../middlewares/validate");
 const {
   profileSchema,
   changeSchema,
+  banSchema,
   addAddressSchema,
   updateAddressSchema,
 } = require("./../validations/user");
@@ -44,6 +45,7 @@ router
   .post(
     passport.authenticate("accessToken", { session: false }),
     roleGuard("ADMIN"),
+    validate(banSchema),
     banController.ban
   )
   .delete(

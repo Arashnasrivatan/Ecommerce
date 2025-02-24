@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const AddressesSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  postalCode: { type: String, required: true, unique: true },
+  postalCode: { type: String, required: true },
   location: {
     lat: {
       type: Number,
@@ -46,6 +46,6 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const model = new mongoose.model("User", UserSchema);
+const model = mongoose.model("User", UserSchema);
 
 module.exports = model;

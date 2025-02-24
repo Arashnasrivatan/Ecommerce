@@ -1,11 +1,16 @@
 const mongoose = require("mongoose");
 
 const banSchema = new mongoose.Schema({
-        phone: {
-                type: String,
-                required: true
-        },
-        
+  phone: {
+    type: String,
+    required: true,
+  },
+  banReason: {
+    type: String,
+    required: true,
+  },
 });
 
-module.exports = mongoose.model("Ban", banSchema);
+const model = mongoose.model("Ban", banSchema);
+
+module.exports = model;
