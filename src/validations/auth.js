@@ -78,50 +78,17 @@ const forgotSchema = yup.object().shape({
 const resetSchema = yup.object().shape({
   newPassword: yup
     .string()
-    .required("لطفا رمز عبور را وارد کنید")
-    .min(8, "رمز عبور نمی تواند کمتر از 8 کاراکتر باشد")
-    .max(24, "رمز عبور نمی تواند بیشتر از 24 کاراکتر باشد")
+    .required("Please enter a password")
+    .min(8, "Password cannot be less than 8 characters")
+    .max(24, "Password cannot be more than 24 characters")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*_?&])[A-Za-z\d@$!%_*?&]{8,}$/,
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
   confirmPassword: yup
     .string()
-    .oneOf(
-      [yup.ref("newPassword"), null],
-      "تایید رمز عبور با رمز عبور جدید مطابقط ندارد"
-    )
-    .required("لطفا تأیید رمز عبور را وارد کنید")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*_?&])[A-Za-z\d@$!%_*?&]{8,}$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-    ),
-});
-
-const changeSchema = yup.object().shape({
-  oldPassword: yup
-    .string()
-    .required("لطفا رمز عبور فعلی خود را وارد کنید")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*_?&])[A-Za-z\d@$!%_*?&]{8,}$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-    ),
-  newPassword: yup
-    .string()
-    .required("لطفا رمز عبور جدید خود را وارد کنید")
-    .min(8, "رمز عبور نمی تواند کمتر از 8 کاراکتر باشد")
-    .max(24, "رمز عبور نمی تواند بیشتر از 24 کاراکتر باشد")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*_?&])[A-Za-z\d@$!%_*?&]{8,}$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-    ),
-  confirmPassword: yup
-    .string()
-    .oneOf(
-      [yup.ref("newPassword"), null],
-      "تایید رمز عبور با رمز عبور جدید مطابقط ندارد"
-    )
-    .required("لطفا تأیید رمز عبور را وارد کنید")
+    .oneOf([yup.ref("newPassword"), null], "Confirm password does not match the new password")
+    .required("Please confirm your password")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*_?&])[A-Za-z\d@$!%_*?&]{8,}$/,
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
@@ -134,5 +101,4 @@ module.exports = {
   loginSchema,
   forgotSchema,
   resetSchema,
-  changeSchema,
 };

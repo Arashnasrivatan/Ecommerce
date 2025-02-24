@@ -3,6 +3,7 @@ const User = require("./../models/User");
 const Ban = require("./../models/Ban");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require("uuid");
 const configs = require("./../configs");
 const redis = require("./../redis");
 const { sendSms } = require("./../services/sms");
@@ -229,7 +230,7 @@ exports.forgotPassword = async (req, res, next) => {
       return response(res, 500, "Error while sending sms"); // For Security
     }
 
-    const resetLink = `${configs.domain}/reset-password/${resetToken}`;
+    const resetLink = `${configs.domain}/api/auth/reset-password/${resetToken}`;
 
     //! send sms
     // const sms = sendSms(phone,[{name:"Token",value:"token"}]) //! cant send sms because of sandbox plan
@@ -281,15 +282,7 @@ exports.resetPassword = async (req, res, next) => {
     await redis.del(`resetToken:${token}`);
     await redis.del(`resetTokenReq:${phone}`);
 
-    return response(res, 200, "رمز عبور با موفقیت تغییر یافت");
-  } catch (err) {
-    next(err);
-  }
-};
-
-exports.changePassword = async (req, res, next) => {
-  try {
-    // TODO
+    return response(res, 200, "Password changed successfully");
   } catch (err) {
     next(err);
   }

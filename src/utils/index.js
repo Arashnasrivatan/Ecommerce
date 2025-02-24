@@ -1,4 +1,4 @@
-const getLocationDetail = async (lat, lng) => {
+const getLocationDetails = async (lat, lng) => {
   const response = await fetch(
     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=fa`,
     {
@@ -13,8 +13,15 @@ const getLocationDetail = async (lat, lng) => {
     city: data.city,
     district: data.district,
     county: data.county,
-    state: data.state
+    state: data.state,
   };
 };
 
-module.exports = { getFormatedAddress };
+const createPaginationData = (page, limit, totalCount, resource) => ({
+  page,
+  limit,
+  totalPage: Math.ceil(totalCount / limit),
+  ["total" + resource]: totalCount,
+});
+
+module.exports = { getLocationDetails, createPaginationData };

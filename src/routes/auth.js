@@ -8,7 +8,6 @@ const {
   loginSchema,
   forgotSchema,
   resetSchema,
-  changeSchema,
 } = require("./../validations/auth");
 const router = express.Router();
 
@@ -30,14 +29,6 @@ router
 router
   .route("/reset-password/:token")
   .post(validate(resetSchema), controller.resetPassword);
-
-router
-  .route("/change-password")
-  .post(
-    passport.authenticate("accessToken", { session: false }),
-    validate(changeSchema),
-    controller.changePassword
-  );
 
 router
   .route("/me")
