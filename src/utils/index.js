@@ -7,6 +7,7 @@ const getLocationDetails = async (lat, lng) => {
   );
 
   const data = await response.json();
+
   return {
     display_name: data.display_name,
     village: data.village,
@@ -17,6 +18,21 @@ const getLocationDetails = async (lat, lng) => {
   };
 };
 
+const isLocationInIran = (lat, lng) => {
+  const iranBounds = {
+    latMin: 25.0,
+    latMax: 39.5,
+    lngMin: 44.0,
+    lngMax: 63.5,
+  };
+  return (
+    lat >= iranBounds.latMin &&
+    lat <= iranBounds.latMax &&
+    lng >= iranBounds.lngMin &&
+    lng <= iranBounds.lngMax
+  );
+};
+
 const createPaginationData = (page, limit, totalCount, resource) => ({
   page,
   limit,
@@ -24,4 +40,4 @@ const createPaginationData = (page, limit, totalCount, resource) => ({
   ["total" + resource]: totalCount,
 });
 
-module.exports = { getLocationDetails, createPaginationData };
+module.exports = { getLocationDetails, isLocationInIran, createPaginationData };

@@ -69,6 +69,10 @@ router
 
 router
   .route("/addresses/:id")
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    controller.getAddress
+  )
   .patch(
     passport.authenticate("accessToken", { session: false }),
     validate(updateAddressSchema),

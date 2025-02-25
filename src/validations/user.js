@@ -1,5 +1,12 @@
 const yup = require("yup");
 
+const iranBounds = {
+  latMin: 25.0,
+  latMax: 39.5,
+  lngMin: 44.0,
+  lngMax: 63.5,
+};
+
 const profileSchema = yup.object().shape({
   fullname: yup
     .string()
@@ -58,7 +65,26 @@ const banSchema = yup.object().shape({
   banReason: yup.string().required("ban Reason is required").min(5).max(100),
 });
 
-const addAddressSchema = yup.object().shape({});
+const addAddressSchema = yup.object().shape({
+  name: yup.string().required('Name is required'),
+  postalCode: yup
+    .string()
+    .required('Postal code is required')
+    .matches(/\b(?!(\d)\1{3})[13-9]{4}[1346-9][013-9]{5}\b/, 'Postal code must be exactly 10 digits'), // IRAN Postal Code Length
+  location: yup.object().shape({
+    lat: yup
+    .number()
+    .required('Latitude is required')
+    .min(iranBounds.latMin, `Latitude must be at least ${iranBounds.latMin}`)
+    .max(iranBounds.latMax, `Latitude must be at most ${iranBounds.latMax}`),
+  lng: yup
+    .number()
+    .required('Longitude is required')
+    .min(iranBounds.lngMin, `Longitude must be at least ${iranBounds.lngMin}`)
+    .max(iranBounds.lngMax, `Longitude must be at most ${iranBounds.lngMax}`),
+  }),
+  address: yup.string().required('Address is required'),
+});
 
 const updateAddressSchema = yup.object().shape({});
 
