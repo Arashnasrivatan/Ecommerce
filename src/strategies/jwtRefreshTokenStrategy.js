@@ -14,7 +14,7 @@ module.exports = new JwtStrategy(
   async (req, payload, done) => {
     const refreshToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 
-    const user = await User.findOne({ _id: payload.id }).select("-password");
+    const user = await User.findById(payload.id).select("-password");
 
     if (!user) {
       return done(null, false);

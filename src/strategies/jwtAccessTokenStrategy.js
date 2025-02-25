@@ -9,7 +9,7 @@ module.exports = new JwtStrategy(
     secretOrKey: configs.auth.accessTokenSecretKey,
   },
   async (payload, done) => {
-    const user = await User.findOne({ _id: payload.id }).select("-password");
+    const user = await User.findById(payload.id).select("-password");
 
     if (!user) return done(null, false);
 

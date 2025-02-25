@@ -22,12 +22,16 @@ const AddressesSchema = new mongoose.Schema({
 
 const UserSchema = new mongoose.Schema(
   {
-    phone: {
+    fullname: {
+      type: String,
+      required: true,
+    },
+    username: {
       type: String,
       required: true,
       unique: true,
     },
-    username: {
+    phone: {
       type: String,
       required: true,
       unique: true,

@@ -11,6 +11,8 @@ const sentSchema = yup.object().shape({
 });
 
 const verifySchema = yup.object().shape({
+  fullname: yup.string().required("fullname is required").min(3).max(50),
+  
   username: yup
     .string()
     .required("Username is required")
@@ -87,7 +89,10 @@ const resetSchema = yup.object().shape({
     ),
   confirmPassword: yup
     .string()
-    .oneOf([yup.ref("newPassword"), null], "Confirm password does not match the new password")
+    .oneOf(
+      [yup.ref("newPassword"), null],
+      "Confirm password does not match the new password"
+    )
     .required("Please confirm your password")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*_?&])[A-Za-z\d@$!%_*?&]{8,}$/,

@@ -46,7 +46,7 @@ exports.sent = async (req, res, next) => {
     const isBan = await Ban.findOne({ phone });
 
     if (isBan) {
-      return response(res, 400, "You are banned");
+      return response(res, 403, "You are banned");
     }
 
     const existingUser = await User.findOne({
@@ -85,12 +85,18 @@ exports.sent = async (req, res, next) => {
 
 exports.verify = async (req, res, next) => {
   try {
-    const { username, phone, password, otp } = req.body;
+    const { fullname, username, phone, password, otp } = req.body;
 
     const isBan = await Ban.findOne({ phone });
 
     if (isBan) {
-      return response(res, 400, "You are banned");
+      return response(res, 403, "You are banned");
+    }
+
+    const isUserExist = await User.findOne({ username });
+
+    if (isUserExist) {
+      return response(res, 400, "a user exist with this username");
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -111,6 +117,7 @@ exports.verify = async (req, res, next) => {
     await redis.del(getOtpRedisPattern(phone));
 
     const user = await User.create({
+      fullname,
       phone,
       username,
       password: hashedPassword,
