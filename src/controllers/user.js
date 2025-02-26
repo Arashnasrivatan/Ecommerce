@@ -1,7 +1,6 @@
 const response = require("./../utils/response");
 const User = require("./../models/User");
 const bcrypt = require("bcrypt");
-const configs = require("./../configs");
 const { isValidObjectId } = require("mongoose");
 const { getLocationDetails, isLocationInIran } = require("./../utils/index");
 

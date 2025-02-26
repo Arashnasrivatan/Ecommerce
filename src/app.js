@@ -12,6 +12,7 @@ const JwtAccessTokenStrategy = require("./strategies/JwtAccessTokenStrategy");
 const JwtRefreshTokenStrategy = require("./strategies/JwtRefreshTokenStrategy");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const categoryRoutes = require("./routes/category");
 
 const app = express();
 
@@ -45,6 +46,7 @@ passport.use("refreshToken", JwtRefreshTokenStrategy);
 //* Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/category", categoryRoutes);
 
 //TODO Swagger
 
