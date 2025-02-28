@@ -33,7 +33,7 @@ const categorySchema = new mongoose.Schema({
         },
         type: {
           type: String,
-          enum: ["selectbox", "radio"],
+          enum: ["selectbox", "radio", "range"],
           required: true,
         },
         options: {
@@ -55,4 +55,4 @@ const categorySchema = new mongoose.Schema({
 
 const model = mongoose.model("Category", categorySchema);
 
-module.exports = model
+module.exports = model;

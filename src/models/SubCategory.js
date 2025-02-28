@@ -34,7 +34,7 @@ const SubCategorySchema = new mongoose.Schema({
         },
         type: {
           type: String,
-          enum: ["selectbox", "radio"],
+          enum: ["selectbox", "radio", "range"],
           required: true,
         },
         options: {
