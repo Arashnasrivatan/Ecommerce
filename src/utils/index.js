@@ -40,4 +40,27 @@ const createPaginationData = (page, limit, totalCount, resource) => ({
   ["total" + resource]: totalCount,
 });
 
-module.exports = { getLocationDetails, isLocationInIran, createPaginationData };
+const hasDuplicateKeysInArray = (arr) => {
+  if (!Array.isArray(arr)) return false;
+
+  const allKeys = arr.flatMap((obj) => Object.keys(obj));
+  const uniqueKeys = new Set(allKeys);
+
+  return allKeys.length !== uniqueKeys.size;
+};
+
+const isSingleKeyObject = (obj) => {
+  return (
+    typeof obj === "object" &&
+    !Array.isArray(obj) &&
+    Object.keys(obj).length === 1
+  );
+};
+
+module.exports = {
+  getLocationDetails,
+  isLocationInIran,
+  createPaginationData,
+  hasDuplicateKeysInArray,
+  isSingleKeyObject,
+};

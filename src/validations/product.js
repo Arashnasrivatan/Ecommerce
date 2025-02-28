@@ -13,10 +13,10 @@ const createProductValidator = yup.object().shape({
     .max(1000, "Product description cannot exceed 1000 characters"),
   subCategory: yup
     .string()
-    .required("SubCategory ID is required")
+    .required("subCategory ID is required")
     .test(
       "is-valid-objectid",
-      "SubCategory ID must be a valid ObjectId",
+      "subCategory ID must be a valid ObjectId",
       isValidObjectId
     ),
   stock: yup
@@ -24,19 +24,23 @@ const createProductValidator = yup.object().shape({
     .required("Stock is required")
     .min(1, "Stock must be at least 1")
     .max(1000, "Stock cannot exceed 1000"),
-  price: yup
+  priceInRial: yup
     .number()
-    .required("Price is required")
-    .min(0, "Price cannot be negative"),
+    .required("priceInRial is required")
+    .min(0, "priceInRial cannot be negative"),
   filterValues: yup
-    .object()
+    .array()
+    .required()
+    .transform((value) => JSON.parse(value))
     .test(
       "filterValuesCheck",
       "filterValues must be an object with key-value pairs",
       (value) => value === undefined || typeof value === "object"
     ),
   customFields: yup
-    .object()
+    .array()
+    .optional()
+    .transform((value) => JSON.parse(value))
     .test(
       "customFieldsCheck",
       "customFields must be an object with key-value pairs",
@@ -56,23 +60,27 @@ const updateProductValidator = yup.object().shape({
     .string()
     .test(
       "is-valid-objectid",
-      "SubCategory ID must be a valid ObjectId",
+      "subCategory ID must be a valid ObjectId",
       (value) => value === null || value === undefined || isValidObjectId(value)
     ),
   stock: yup
     .number()
     .min(1, "Stock must be at least 1")
     .max(1000, "Stock cannot exceed 1000"),
-  price: yup.number().min(0, "Price cannot be negative"),
+  priceInRial: yup.number().min(0, "priceInRial cannot be negative"),
   filterValues: yup
-    .object()
+    .array()
+    .required()
+    .transform((value) => JSON.parse(value))
     .test(
       "filterValuesCheck",
       "filterValues must be an object with key-value pairs",
       (value) => value === undefined || typeof value === "object"
     ),
   customFields: yup
-    .object()
+    .array()
+    .optional()
+    .transform((value) => JSON.parse(value))
     .test(
       "customFieldsCheck",
       "customFields must be an object with key-value pairs",
