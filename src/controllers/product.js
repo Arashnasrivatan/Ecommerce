@@ -307,7 +307,20 @@ exports.getAllProducts = async (req, res, next) => {
 
 exports.getOneProduct = async (req, res, next) => {
   try {
-    // TODO
+    const { productId } = req.params;
+
+    if (!isValidObjectId(productId)) {
+      return response(res, 400, "Product ID is not valid !!");
+    }
+
+    const product = await Product.findById(productId)
+      .populate("subCategory")
+
+    if (!product) {
+      return response(res, 404, "Product not found !!");
+    }
+
+    return response(res, 200, "Product fetched successfully", product);
   } catch (err) {
     next(err);
   }
