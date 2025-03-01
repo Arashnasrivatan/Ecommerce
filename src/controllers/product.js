@@ -3,6 +3,7 @@ const Product = require("./../models/Product");
 const SubCategory = require("./../models/SubCategory");
 const path = require("path");
 const { isValidObjectId } = require("mongoose");
+const mongoose = require("mongoose");
 const {
   createPaginationData,
   isSingleKeyObject,
@@ -131,7 +132,7 @@ exports.createProduct = async (req, res, next) => {
       try {
         customFields = JSON.parse(customFields);
         console.log(customFields);
-        
+
         if (hasDuplicateKeysInArray(customFields)) {
           return response(
             res,
@@ -173,41 +174,41 @@ exports.createProduct = async (req, res, next) => {
       return response(res, 404, "subcategory not found");
     }
 
-        const uploadDir = path.join(
-          __dirname,
-          "..",
-          "..",
-          "public",
-          "images",
-          "products"
-        );
-        const images = [];
+    const uploadDir = path.join(
+      __dirname,
+      "..",
+      "..",
+      "public",
+      "images",
+      "products"
+    );
+    const images = [];
 
-        try {
-          req.files.forEach(async (file) => {
-            const fileBuffer = file.buffer;
-            const fileName = `${Date.now()}_${file.originalname}`;
-            const filePath = path.join(uploadDir, fileName);
-            images.push(`/images/products/${fileName}`);
+    try {
+      req.files.forEach(async (file) => {
+        const fileBuffer = file.buffer;
+        const fileName = `${Date.now()}_${file.originalname}`;
+        const filePath = path.join(uploadDir, fileName);
+        images.push(`/images/products/${fileName}`);
 
-            await sharp(fileBuffer).png({ quality: 50 }).toFile(filePath);
-          });
-        } catch (err) {
-          return response(res, 500, "error uploading file");
-        }
+        await sharp(fileBuffer).png({ quality: 50 }).toFile(filePath);
+      });
+    } catch (err) {
+      return response(res, 500, "error uploading file");
+    }
 
-        const product = await Product.create({
-          name,
-          description,
-          subCategory,
-          stock,
-          priceInRial,
-          filterValues,
-          customFields,
-          images,
-        });
+    const product = await Product.create({
+      name,
+      description,
+      subCategory,
+      stock,
+      priceInRial,
+      filterValues,
+      customFields: customFields || {},
+      images,
+    });
 
-    return response(res, 201, "product created successfully",product);
+    return response(res, 201, "product created successfully", product);
   } catch (err) {
     next(err);
   }
@@ -215,7 +216,90 @@ exports.createProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-    // TODO
+    const {
+      name,
+      subCategory,
+      minPrice,
+      maxPrice,
+      filterValues,
+      page = 1,
+      limit = 15,
+    } = req.query;
+
+    const filters = {
+      stock: { $gt: 0 },
+    };
+
+    if (name) {
+      filters.name = { $regex: name, $options: "i" };
+    }
+
+    if (subCategory) {
+      if (!isValidObjectId(subCategory)) {
+        return response(res, 400, "sub category id is not valid");
+      }
+      const isSubCategoryExist = await SubCategory.findById(subCategory);
+
+      if (!isSubCategoryExist) {
+        return response(res, 404, "Sub Category not found");
+      }
+
+      filters.subCategory =
+        mongoose.Types.ObjectId.createFromHexString(subCategory);
+    }
+
+    if (minPrice) {
+      filters["priceInRial"] = { $gte: +minPrice };
+    }
+
+    if (maxPrice) {
+      filters["priceInRial"] = { $lte: +maxPrice };
+    }
+
+    if (filterValues) {
+      const parsedFilterValues = JSON.parse(filterValues);
+      parsedFilterValues.forEach((obj) => {
+        if (!isSingleKeyObject(obj)) {
+          return response(
+            res,
+            400,
+            "filterValues must be an array of single-key objects"
+          );
+        }
+      });
+
+      if (hasDuplicateKeysInArray(parsedFilterValues)) {
+        return response(res, 400, "filterValues must not have duplicate keys");
+      }
+      Object.keys(parsedFilterValues).forEach((key) => {
+        filters[`filterValues.${key}`] = parsedFilterValues[key];
+      });
+    }
+
+    // TODO add comments and rating
+    const products = await Product.aggregate([
+      {
+        $match: filters,
+      },
+      {
+        $skip: (page - 1) * limit,
+      },
+      {
+        $limit: +limit,
+      },
+    ]);
+
+    const totalProducts = await Product.countDocuments(filters);
+
+    return response(res, 200, "Products Fetched Successfully", {
+      pagination: createPaginationData(
+        +page,
+        +limit,
+        totalProducts,
+        "Products"
+      ),
+      products,
+    });
   } catch (err) {
     next(err);
   }
