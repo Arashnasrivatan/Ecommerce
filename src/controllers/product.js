@@ -126,7 +126,6 @@ exports.createProduct = async (req, res, next) => {
     if (customFields) {
       try {
         customFields = JSON.parse(customFields);
-        console.log(customFields);
 
         if (hasDuplicateKeysInArray(customFields)) {
           return response(
@@ -604,7 +603,27 @@ exports.updateProduct = async (req, res, next) => {
 
 exports.deleteProduct = async (req, res, next) => {
   try {
-    // TODO
+    const { productId } = req.params;
+
+    if (!isValidObjectId(productId)) {
+      return response(res, 400, "product id is not valid");
+    }
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+
+    if (!deletedProduct) {
+      return response(res, 404, "Product not found !!");
+    }
+
+    const images = deletedProduct.images;
+
+    images.forEach((image) => {
+      const imagePath = path.join(__dirname, '..', '..', 'public', image);
+      fs.unlinkSync(imagePath);
+    });
+
+    // TODO Delete Product from user cart
+
+    return response(res, 200, "Product deleted successfully", deletedProduct);
   } catch (err) {
     next(err);
   }
