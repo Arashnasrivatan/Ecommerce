@@ -51,13 +51,16 @@ const createProductValidator = yup.object().shape({
 const updateProductValidator = yup.object().shape({
   name: yup
     .string()
+    .optional()
     .min(3, "Product name must be at least 3 characters long")
     .max(100, "Product name cannot exceed 100 characters"),
   description: yup
     .string()
+    .optional()
     .max(1000, "Product description cannot exceed 1000 characters"),
   subCategory: yup
     .string()
+    .optional()
     .test(
       "is-valid-objectid",
       "subCategory ID must be a valid ObjectId",
@@ -65,12 +68,13 @@ const updateProductValidator = yup.object().shape({
     ),
   stock: yup
     .number()
+    .optional()
     .min(1, "Stock must be at least 1")
     .max(1000, "Stock cannot exceed 1000"),
   priceInRial: yup.number().min(0, "priceInRial cannot be negative"),
   filterValues: yup
     .array()
-    .required()
+    .optional()
     .transform((value) => JSON.parse(value))
     .test(
       "filterValuesCheck",

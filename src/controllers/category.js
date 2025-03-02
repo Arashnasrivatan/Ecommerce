@@ -159,6 +159,7 @@ exports.editCategory = async (req, res, next) => {
       }
     }
 
+    let newSlug;
     if (slug) {
       const duplicateSlug = await Category.findOne({
         slug,
@@ -168,13 +169,14 @@ exports.editCategory = async (req, res, next) => {
       if (duplicateSlug) {
         return response(res, 400, "Slug already exists !!");
       }
+      newSlug = slugify(slug.toString(), { lower: true })
     }
 
     const updatedCategory = await Category.findByIdAndUpdate(
       categoryId,
       {
         title,
-        slug: slugify(slug, { lower: true }),
+        slug: newSlug,
         parent,
         filters,
       },
