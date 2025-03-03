@@ -176,7 +176,19 @@ exports.updateComment = async (req, res, next) => {
 
 exports.deleteComment = async (req, res, next) => {
   try {
-    // TODO
+    const { commentId } = req.params;
+
+    if (!isValidObjectId(commentId)) {
+      return response(res, 400, "Invalid comment ID");
+    }
+
+    const comment = await Comment.findByIdAndDelete(commentId);
+
+    if (!comment) {
+      return response(res, 404, "Comment not found");
+    }
+
+    return response(res, 200, "Comment deleted successfully", comment);
   } catch (err) {
     next(err);
   }
