@@ -84,7 +84,37 @@ exports.createComment = async (req, res, next) => {
 
 exports.getAllComments = async (req, res, next) => {
   try {
-    // TODO
+    const { page = 1, limit = 10 } = req.query;
+
+    const comments = await Comment.find()
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate("product", "-sellers")
+      .populate("user", "-addresses")
+      .populate({
+        path: "replies",
+        populate: { path: "user", sellect: "-addresses" },
+      })
+      .lean();
+
+    if (!comments) {
+      return response(res, 404, "There is no comment !!");
+    }
+
+    const commentCount = await Comment.countDocuments();
+
+    const Pagination = createPaginationData(
+      page,
+      limit,
+      commentCount,
+      "Comments"
+    );
+
+    return response(res, 200, "Comments Fetched Successfully", {
+      Pagination,
+      Comments: comments,
+    });
   } catch (err) {
     next(err);
   }
