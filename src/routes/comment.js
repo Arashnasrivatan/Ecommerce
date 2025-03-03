@@ -1,6 +1,6 @@
 const express = require("express");
-const controller = require("./../controllers/v1/comment");
-const { auth } = require("./../middlewares/auth");
+const controller = require("./../controllers/comment");
+const passport = require("passport");
 const roleGuard = require("./../middlewares/roleGuard");
 const validate = require("./../middlewares/validate");
 const {
@@ -8,27 +8,58 @@ const {
   updateCommentValidator,
   addReplyValidator,
   updateReplyValidator,
-} = require("./../validators/comment");
+} = require("./../validations/comment");
 
 const router = express.Router();
 
 router
   .route("/")
   .get(controller.getComments)
-  .post(auth, validate(createCommentValidator), controller.createComment);
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    validate(createCommentValidator),
+    controller.createComment
+  );
 
-router.route("/all").get(auth, roleGuard("ADMIN"), controller.getAllComments)
+router
+  .route("/all")
+  .get(
+    passport.authenticate("accessToken", { session: false }),
+    roleGuard("ADMIN"),
+    controller.getAllComments
+  );
 
 router
   .route("/:commentId")
-  .patch(auth, validate(updateCommentValidator), controller.updateComment)
-  .delete(auth, roleGuard("ADMIN"), controller.deleteComment);
+  .patch(
+    passport.authenticate("accessToken", { session: false }),
+    validate(updateCommentValidator),
+    controller.updateComment
+  )
+  .delete(
+    passport.authenticate("accessToken", { session: false }),
+    roleGuard("ADMIN"),
+    controller.deleteComment
+  );
 
-router.route("/:commentId/reply").post(auth, validate(addReplyValidator), controller.createReply);
+router
+  .route("/:commentId/reply")
+  .post(
+    passport.authenticate("accessToken", { session: false }),
+    validate(addReplyValidator),
+    controller.createReply
+  );
 
 router
   .route("/:commentId/reply/:replyId")
-  .patch(auth, validate(updateReplyValidator), controller.updateReply)
-  .delete(auth, controller.deleteReply);
+  .patch(
+    passport.authenticate("accessToken", { session: false }),
+    validate(updateReplyValidator),
+    controller.updateReply
+  )
+  .delete(
+    passport.authenticate("accessToken", { session: false }),
+    controller.deleteReply
+  );
 
 module.exports = router;

@@ -2,7 +2,7 @@ const { isValidObjectId } = require("mongoose");
 const yup = require("yup");
 
 const createCommentValidator = yup.object().shape({
-  productId: yup
+  product: yup
     .string()
     .required("Product ID is required")
     .test("is-valid-object-id", "Invalid product ID", (value) =>

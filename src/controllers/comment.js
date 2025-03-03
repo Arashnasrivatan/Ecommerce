@@ -1,11 +1,17 @@
 const response = require("./../utils/response");
 const Product = require("./../models/Product");
 const Comment = require("./../models/Comment");
+const User = require("./../models/User");
 const { createPaginationData } = require("./../utils/index");
+const { isValidObjectId } = require("mongoose");
 
 exports.getComments = async (req, res, next) => {
   try {
     const { productId, limit = 10, page = 1 } = req.query;
+
+    if (!productId) {
+      return response(res, 400, " productId is required");
+    }
 
     if (!isValidObjectId(productId)) {
       return response(res, 400, "Invalid product ID");
@@ -18,8 +24,8 @@ exports.getComments = async (req, res, next) => {
     }
 
     const comments = await Comment.find({ product: productId })
-      .populate("user", "fullname username role createdAt")
-      .populate("replies.user", "fullname username role createdAt");
+      .populate("user", "fullname username role")
+      .populate("replies.user", "fullname username role");
 
     if (!comments) {
       return response(res, 404, "Comments not found");
@@ -90,11 +96,11 @@ exports.getAllComments = async (req, res, next) => {
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ createdAt: -1 })
-      .populate("product", "-sellers")
-      .populate("user", "-addresses")
+      .populate("product")
+      .populate("user", "fullname username role")
       .populate({
         path: "replies",
-        populate: { path: "user", sellect: "-addresses" },
+        populate: { path: "user", sellect: "fullname username role" },
       })
       .lean();
 
@@ -122,7 +128,47 @@ exports.getAllComments = async (req, res, next) => {
 
 exports.updateComment = async (req, res, next) => {
   try {
-    // TODO
+    const { content, rating } = req.body;
+    const { commentId } = req.params;
+    const { user_id } = req.query;
+    const isAdmin = req.user.role === "ADMIN";
+
+    let user;
+    if (isAdmin && user_id) {
+      if (!isValidObjectId(user_id)) {
+        return response(res, 400, "Invalid user_id");
+      }
+      user = await User.findById(user_id);
+    } else {
+      user = await User.findById(req.user._id);
+    }
+
+    if (!user) {
+      return response(res, 404, "User not found");
+    }
+    if (!isValidObjectId(commentId)) {
+      return response(res, 400, "Invalid comment id");
+    }
+
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return response(res, 404, "comment not found");
+    }
+
+    if (
+      !isAdmin &&
+      req.user._id.trim().toString() != comment.user.trim().toString()
+    ) {
+      return response(res, 403, "You Dont have access to edit this comment");
+    }
+
+    comment.content = content || comment.content;
+    comment.rating = rating || comment.rating;
+
+    const updatedComment = await comment.save();
+
+    return response(res, 200, "Comment Updated Successfully", updatedComment);
   } catch (err) {
     next(err);
   }
