@@ -281,8 +281,9 @@ exports.updateReply = async (req, res, next) => {
       return response(res, 404, "Comment not found");
     }
 
-    const reply = comment.replies.find(reply => reply._id.toString() === replyId.toString());
-    
+    const reply = comment.replies.find(
+      (reply) => reply._id.toString() === replyId.toString()
+    );
 
     if (!reply) {
       return response(res, 404, "Reply not found");
@@ -296,7 +297,12 @@ exports.updateReply = async (req, res, next) => {
 
     const updatedComment = await comment.save();
 
-    return response(res, 200, "Reply updated successfully", updatedComment.replies.find(reply => reply._id.toString() === replyId));
+    return response(
+      res,
+      200,
+      "Reply updated successfully",
+      updatedComment.replies.find((reply) => reply._id.toString() === replyId)
+    );
   } catch (err) {
     next(err);
   }
@@ -304,7 +310,38 @@ exports.updateReply = async (req, res, next) => {
 
 exports.deleteReply = async (req, res, next) => {
   try {
-    // TODO
+    const { commentId, replyId } = req.params;
+
+    if (!isValidObjectId(commentId)) {
+      return response(res, 400, "Invalid comment ID");
+    }
+
+    if (!isValidObjectId(replyId)) {
+      return response(res, 400, "Invalid reply ID");
+    }
+
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return response(res, 404, "Comment not found");
+    }
+
+    const reply = comment.replies.id(replyId);
+
+    if (!reply) {
+      return response(res, 404, "Reply not found");
+    }
+
+    comment.replies.pull(replyId);
+
+    const updatedComment = await comment.save();
+
+    return response(
+      res,
+      200,
+      "Reply deleted successfully",
+      updatedComment.replies.find((reply) => reply._id.toString() === replyId)
+    );
   } catch (err) {
     next(err);
   }

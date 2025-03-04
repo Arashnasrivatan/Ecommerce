@@ -59,6 +59,7 @@ router
   )
   .delete(
     passport.authenticate("accessToken", { session: false }),
+    roleGuard("ADMIN"),
     controller.deleteReply
   );
 
