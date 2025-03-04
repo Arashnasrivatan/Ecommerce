@@ -276,6 +276,30 @@ exports.getAllProducts = async (req, res, next) => {
         $match: filters,
       },
       {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "product",
+          as: "comments",
+        },
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $cond: {
+              if: { $gt: [{ $size: "$comments" }, 0] },
+              then: { $avg: `$comments.rating` },
+              else: 0,
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          comments: 0,
+        },
+      },
+      {
         $skip: (page - 1) * limit,
       },
       {
@@ -617,7 +641,7 @@ exports.deleteProduct = async (req, res, next) => {
     const images = deletedProduct.images;
 
     images.forEach((image) => {
-      const imagePath = path.join(__dirname, '..', '..', 'public', image);
+      const imagePath = path.join(__dirname, "..", "..", "public", image);
       fs.unlinkSync(imagePath);
     });
 
