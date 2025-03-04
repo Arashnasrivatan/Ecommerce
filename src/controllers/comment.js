@@ -8,43 +8,47 @@ const { isValidObjectId } = require("mongoose");
 exports.getComments = async (req, res, next) => {
   try {
     const { productId, limit = 10, page = 1 } = req.query;
-
-    if (!productId) {
-      return response(res, 400, " productId is required");
-    }
-
-    if (!isValidObjectId(productId)) {
+    if (!productId) return response(res, 400, "productId is required");
+    if (!isValidObjectId(productId))
       return response(res, 400, "Invalid product ID");
-    }
 
     const product = await Product.findById(productId);
-
-    if (!product) {
-      return response(res, 404, "Product not found");
-    }
+    if (!product) return response(res, 404, "Product not found");
 
     const comments = await Comment.find({ product: productId })
+      .populate("product", "name")
       .populate("user", "fullname username role")
-      .populate("replies.user", "fullname username role");
+      .populate("replies.user", "fullname username role")
+      .lean();
+    if (!comments) return response(res, 404, "Comments not found");
 
-    if (!comments) {
-      return response(res, 404, "Comments not found");
-    }
-
-    const commentsCount = await Comment.countDocuments();
-
-    const Pagination = createPaginationData(
+    const commentsCount = await Comment.countDocuments({ product: productId });
+    const pagination = createPaginationData(
       page,
       limit,
       commentsCount,
       "Comments"
     );
 
-    const commentsWithRepliesCount = comments.map((comment) => {
+    const buildReplyTree = (replies, parentId = null) =>
+      replies
+        .filter((reply) =>
+          parentId
+            ? reply.replyTo && reply.replyTo.toString() === parentId.toString()
+            : !reply.replyTo
+        )
+        .map((reply) => ({
+          ...reply,
+          children: buildReplyTree(replies, reply._id),
+        }));
+
+    const commentsWithNestedReplies = comments.map((comment) => {
+      const nestedReplies = buildReplyTree(comment.replies);
       return {
-        Pagination,
-        ...comment.toObject(),
+        ...comment,
+        replies: nestedReplies,
         repliesCount: comment.replies.length,
+        pagination,
       };
     });
 
@@ -52,7 +56,7 @@ exports.getComments = async (req, res, next) => {
       res,
       200,
       "Comments fetched successfully",
-      commentsWithRepliesCount
+      commentsWithNestedReplies
     );
   } catch (err) {
     next(err);
@@ -91,35 +95,44 @@ exports.createComment = async (req, res, next) => {
 exports.getAllComments = async (req, res, next) => {
   try {
     const { page = 1, limit = 10 } = req.query;
-
     const comments = await Comment.find()
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ createdAt: -1 })
-      .populate("product")
+      .populate("product", "name")
       .populate("user", "fullname username role")
-      .populate({
-        path: "replies",
-        populate: { path: "user", sellect: "fullname username role" },
-      })
+      .populate("replies.user", "fullname username role")
       .lean();
-
-    if (!comments) {
-      return response(res, 404, "There is no comment !!");
-    }
+    if (!comments) return response(res, 404, "No comments found");
 
     const commentCount = await Comment.countDocuments();
-
-    const Pagination = createPaginationData(
+    const pagination = createPaginationData(
       page,
       limit,
       commentCount,
       "Comments"
     );
 
-    return response(res, 200, "Comments Fetched Successfully", {
-      Pagination,
-      Comments: comments,
+    const buildReplyTree = (replies, parentId = null) =>
+      replies
+        .filter((reply) =>
+          parentId
+            ? reply.replyTo && reply.replyTo.toString() === parentId.toString()
+            : !reply.replyTo
+        )
+        .map((reply) => ({
+          ...reply,
+          children: buildReplyTree(replies, reply._id),
+        }));
+
+    const commentsWithNestedReplies = comments.map((comment) => {
+      const nestedReplies = buildReplyTree(comment.replies);
+      return { ...comment, replies: nestedReplies };
+    });
+
+    return response(res, 200, "Comments fetched successfully", {
+      pagination,
+      comments: commentsWithNestedReplies,
     });
   } catch (err) {
     next(err);
@@ -210,7 +223,9 @@ exports.createReply = async (req, res, next) => {
     if (comment) {
       replyTo = null;
     } else {
-      comment = await Comment.findOne({ "replies._id": commentId }).select("-product");
+      comment = await Comment.findOne({ "replies._id": commentId }).select(
+        "-product"
+      );
       if (!comment) {
         return response(res, 404, "Invalid comment or reply ID");
       }
