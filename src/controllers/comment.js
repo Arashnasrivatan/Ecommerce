@@ -196,7 +196,37 @@ exports.deleteComment = async (req, res, next) => {
 
 exports.createReply = async (req, res, next) => {
   try {
-    // TODO
+    const user = req.user;
+    const { commentId } = req.params;
+    const { content } = req.body;
+
+    if (!isValidObjectId(commentId)) {
+      return response(res, 400, "Invalid comment ID");
+    }
+
+    let comment = await Comment.findById(commentId).select("-product");
+    let replyTo = null;
+
+    if (comment) {
+      replyTo = null;
+    } else {
+      comment = await Comment.findOne({ "replies._id": commentId }).select("-product");
+      if (!comment) {
+        return response(res, 404, "Invalid comment or reply ID");
+      }
+      replyTo = commentId;
+    }
+
+    const newReply = {
+      user: user._id,
+      content,
+      replyTo,
+    };
+
+    comment.replies.push(newReply);
+    await comment.save();
+
+    return response(res, 201, "Reply created successfully", newReply);
   } catch (err) {
     next(err);
   }

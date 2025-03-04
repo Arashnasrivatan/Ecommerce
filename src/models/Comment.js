@@ -11,6 +11,12 @@ const repliesSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    replyTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment.replies",
+      required: false,
+      default: null,
+    },
   },
   { timestamps: true }
 );
