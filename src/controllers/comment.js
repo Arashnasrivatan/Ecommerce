@@ -249,7 +249,54 @@ exports.createReply = async (req, res, next) => {
 
 exports.updateReply = async (req, res, next) => {
   try {
-    // TODO
+    const { content } = req.body;
+    const { commentId, replyId } = req.params;
+    const { user_id } = req.query;
+    const isAdmin = req.user.role === "ADMIN";
+
+    let user;
+    if (isAdmin && user_id) {
+      if (!isValidObjectId(user_id)) {
+        return response(res, 400, "Invalid user_id");
+      }
+      user = await User.findById(user_id);
+    } else {
+      user = await User.findById(req.user._id);
+    }
+
+    if (!user) {
+      return response(res, 404, "User not found");
+    }
+    if (!isValidObjectId(commentId)) {
+      return response(res, 400, "Invalid comment id");
+    }
+
+    if (!isValidObjectId(replyId)) {
+      return response(res, 400, "Invalid reply id");
+    }
+
+    const comment = await Comment.findById(commentId).select("-product");
+
+    if (!comment) {
+      return response(res, 404, "Comment not found");
+    }
+
+    const reply = comment.replies.find(reply => reply._id.toString() === replyId.toString());
+    
+
+    if (!reply) {
+      return response(res, 404, "Reply not found");
+    }
+
+    if (!isAdmin && req.user._id.toString() !== reply.user.toString()) {
+      return response(res, 403, "You don't have access to edit this reply");
+    }
+
+    reply.content = content || reply.content;
+
+    const updatedComment = await comment.save();
+
+    return response(res, 200, "Reply updated successfully", updatedComment.replies.find(reply => reply._id.toString() === replyId));
   } catch (err) {
     next(err);
   }
