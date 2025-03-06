@@ -1,5 +1,5 @@
 const express = require("express");
-const controller = require("./../controllers/v1/cart");
+const controller = require("./../controllers/cart");
 const passport = require("passport");
 const validate = require("./../middlewares/validate");
 const {
