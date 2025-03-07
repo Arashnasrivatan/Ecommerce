@@ -172,14 +172,7 @@ exports.removeFromCart = async (req, res, next) => {
     if (index === -1) {
       return response(res, 404, "Item not found in cart");
     }
-
-    const item = cart.items[index];
-
-    if (item.quantity > 1) {
-      item.quantity -= 1;
-    } else {
-      cart.items.splice(index, 1);
-    }
+    cart.items.splice(index, 1);
 
     const updatedCart = await cart.save();
 
