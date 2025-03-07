@@ -78,7 +78,9 @@ exports.addToCart = async (req, res, next) => {
     }
 
     if (quantity > product.stock) {
-      return response(res, 400, "Requested quantity exceeds available stock");
+      return response(res, 400, "Requested quantity exceeds available stock", {
+        productStock: product.stock,
+      });
     }
 
     const price = product.priceInRial;
@@ -104,6 +106,10 @@ exports.addToCart = async (req, res, next) => {
     );
 
     if (index !== -1) {
+      const totalQuantity = cart.items[index].quantity + quantity;
+      if (totalQuantity > product.stock) {
+        return response(res, 400, "Total quantity exceeds available stock");
+      }
       if (cart.items[index].quantity + quantity > 100) {
         return response(res, 400, "Quantity exceeds maximum limit of 100");
       }
