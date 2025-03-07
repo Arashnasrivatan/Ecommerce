@@ -42,7 +42,7 @@ exports.getCart = async (req, res, next) => {
 
     return response(res, 200, "Cart Fetched Successfully", {
       cart,
-      totalPrice: cart.totalPrice + " IRR",
+      totalPrice: cart.totalPrice,
     });
   } catch (err) {
     next(err);
@@ -98,7 +98,10 @@ exports.addToCart = async (req, res, next) => {
         ],
       });
 
-      return response(res, 201, "Cart created successfully", newCart);
+      return response(res, 201, "Cart created successfully", {
+        newCart,
+        totalPrice: newCart.totalPrice,
+      });
     }
 
     const index = cart.items.findIndex(
@@ -130,9 +133,12 @@ exports.addToCart = async (req, res, next) => {
       }
     }
 
-    await cart.save();
+    const updatedCart = await cart.save();
 
-    return response(res, 200, "Cart updated successfully", cart);
+    return response(res, 200, "Cart updated successfully", {
+      updatedCart,
+      totalPrice: cart.totalPrice,
+    });
   } catch (err) {
     next(err);
   }
@@ -188,7 +194,69 @@ exports.removeFromCart = async (req, res, next) => {
 
 exports.updateCart = async (req, res, next) => {
   try {
-    // TODO
+    const { user_id } = req.query;
+    const isAdmin = req.user.role === "ADMIN";
+    let user;
+
+    if (isAdmin && user_id) {
+      if (!isValidObjectId(user_id)) {
+        return response(res, 400, "Invalid user_id");
+      }
+      user = await User.findById(user_id);
+    } else {
+      user = req.user;
+    }
+
+    if (!user) {
+      return response(res, 404, "User not found");
+    }
+
+    const { productId } = req.body;
+    const quantity = req.validatedBody.quantity;
+
+    const cart = await Cart.findOne({ user: user._id });
+
+    if (!cart) {
+      return response(res, 404, "Cart not found");
+    }
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return response(res, 404, "Product not found");
+    }
+
+    const index = cart.items.findIndex(
+      (item) => item.product.toString() === productId.toString()
+    );
+
+    if (index === -1) {
+      return response(res, 404, "Item not found in cart");
+    }
+
+    if (quantity > 100) {
+      return response(res, 400, "Quantity exceeds maximum limit of 100");
+    }
+
+    if (quantity > product.stock) {
+      return response(res, 400, "Requested quantity exceeds available stock");
+    }
+
+    const oldQuantity = cart.items[index].quantity;
+    const quantityDifference = quantity - oldQuantity;
+
+    if (quantityDifference > 0 && quantityDifference > product.stock) {
+      return response(res, 400, "Requested quantity exceeds available stock");
+    }
+
+    cart.items[index].quantity = quantity;
+
+    await cart.save();
+
+    return response(res, 200, "Quantity updated successfully", {
+      cart,
+      totalPrice: cart.totalPrice,
+    });
   } catch (err) {
     next(err);
   }
