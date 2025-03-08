@@ -24,4 +24,11 @@ module.exports = {
     sms_patern: process.env.SMS_PATERN,
     sms_api_key: process.env.SMS_SANDBOX_API_KEY,
   },
+
+  zarinpal: {
+    merchant: process.env.ZARINPAL_MERCHANT,
+    paymentUrl: process.env.ZARINPAL_PAYMENT_BASE_URL,
+    apiUrl: process.env.ZARINPAL_API_BASE_URL,
+    callback: process.env.ZARINPAL_CALLBACK_URL,
+  },
 };
