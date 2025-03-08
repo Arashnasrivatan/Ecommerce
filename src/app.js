@@ -16,6 +16,7 @@ const categoryRoutes = require("./routes/category");
 const productRoutes = require("./routes/product");
 const commentRoutes = require("./routes/comment");
 const cartRoutes = require("./routes/cart");
+const orderRoutes = require("./routes/order");
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/order", orderRoutes);
 
 //TODO Swagger
 
