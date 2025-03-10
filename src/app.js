@@ -17,6 +17,7 @@ const productRoutes = require("./routes/product");
 const commentRoutes = require("./routes/comment");
 const cartRoutes = require("./routes/cart");
 const orderRoutes = require("./routes/order");
+const checkoutRoutes = require("./routes/checkout");
 
 const app = express();
 
@@ -55,6 +56,8 @@ app.use("/api/products", productRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
+app.use("/api/checkout", checkoutRoutes);
+
 
 //TODO Swagger
 

@@ -1,6 +1,5 @@
 const configs = require("./../configs");
 
-//! Not Tested Yet
 exports.createPayment = async ({ amountInRial, description, mobile }) => {
   try {
     const response = await fetch(
@@ -20,8 +19,8 @@ exports.createPayment = async ({ amountInRial, description, mobile }) => {
       }
     );
 
-    const data = await response.data.json();
-
+    const data = await response.json();
+    
     return {
       authority: data.data.authority,
       PaymentUrl: process.env.ZARINPAL_PAYMENT_BASE_URL + data.data.authority,

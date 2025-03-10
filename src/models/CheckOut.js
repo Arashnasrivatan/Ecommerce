@@ -37,8 +37,7 @@ const CheckoutSchema = new mongoose.Schema(
 
     authority: {
       type: String,
-      unique: true,
-      required: true,
+      unique: true
     },
 
     expiresAt: {
