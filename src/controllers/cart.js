@@ -25,7 +25,7 @@ exports.getCart = async (req, res, next) => {
     }
 
     const cart = await Cart.findOne({ user: user._id })
-      .populate("items.product", "name images priceInRial")
+      .populate("items.product", "name images stock priceInRial")
       .select("-user");
 
     if (!cart) {

@@ -84,7 +84,7 @@ exports.createCheckout = async (req, res, next) => {
 
     const checkout = await Checkout.findById(newCheckout._id).populate(
       "items.product",
-      "name images priceInRial"
+      "name images stock priceInRial"
     );
 
     return response(res, 201, "Checkout created successfully :))", {
@@ -98,7 +98,70 @@ exports.createCheckout = async (req, res, next) => {
 
 exports.verifyCheckOut = async (req, res, next) => {
   try {
-    // TODO
+    const { Authority: authority } = req.query;
+
+    const alreadyCreatedOrder = await Order.findOne({ authority });
+    if (alreadyCreatedOrder) {
+      return response(res, 400, "Payment already verified !!");
+    }
+
+    const checkout = await Checkout.findOne({ authority });
+    if (!checkout) {
+      return response(res, 404, "Checkout not found !!");
+    }
+
+    const payment = await verifyPayment({
+      amountInRial: checkout.totalPrice,
+      authority,
+    });
+
+    if (![100, 101].includes(payment.code)) {
+      await Checkout.deleteOne({ _id: checkout._id });
+      return response(res, 400, "Payment not verified !!");
+    }
+
+    const order = await Order.create({
+      user: checkout.user,
+      authority: checkout.authority,
+      items: checkout.items,
+      shippingAddress: checkout.shippingAddress,
+    });
+
+    await order.save();
+
+    for (const item of checkout.items) {
+      const product = await Product.findById(item.product);
+
+      if (product) {
+        product.stock -= item.quantity;
+        await product.save();
+      }
+    }
+
+    await Cart.findOneAndUpdate({ user: checkout.user }, { items: [] });
+    await Checkout.deleteOne({ _id: checkout._id });
+
+    const orderDetails = await Order.findById(order._id)
+      .populate("items.product", "name images stock priceInRial")
+      .select("-user -shippingAddress")
+      .lean();
+
+    const user = await User.findById(order.user);
+
+    if (!user) {
+      return response(res, 404, "User not found !!");
+    }
+
+    const selectedAddress = user.addresses.find(
+      (addr) => addr._id.toString() === order.shippingAddress.toString()
+    );
+
+    orderDetails.shippingAddress = selectedAddress;
+
+    return response(res, 200, "Payment verified successfully !!", {
+      order: orderDetails,
+      totalPrice: order.totalPrice,
+    });
   } catch (err) {
     next(err);
   }

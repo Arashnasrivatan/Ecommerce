@@ -31,7 +31,7 @@ const CheckoutSchema = new mongoose.Schema(
 
     shippingAddress: {
       type: mongoose.Types.ObjectId,
-      ref: "User.addresses",
+      ref: "User",
       required: true,
     },
 
@@ -43,7 +43,7 @@ const CheckoutSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
       required: true,
-      default: () => new Date(Date.now() + 10 * 60 * 1000), // 10 Min
+      default: () => new Date(Date.now() + 7 * 60 * 1000), // 7 Min
     },
   },
   { timestamps: true }

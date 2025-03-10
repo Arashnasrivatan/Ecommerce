@@ -18,7 +18,7 @@ exports.getAllOrders = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate("items.product", "name images priceInRial")
+      .populate("items.product", "name images stock priceInRial")
       .select("-user")
       .lean();
 
