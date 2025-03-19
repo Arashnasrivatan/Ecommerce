@@ -31,16 +31,16 @@ exports.getComments = async (req, res, next) => {
     );
 
     const buildReplyTree = (replies, parentId = null) =>
-      replies
+      {return replies
         .filter((reply) =>
-          parentId
+          {return parentId
             ? reply.replyTo && reply.replyTo.toString() === parentId.toString()
-            : !reply.replyTo
+            : !reply.replyTo}
         )
-        .map((reply) => ({
+        .map((reply) => {return {
           ...reply,
           children: buildReplyTree(replies, reply._id),
-        }));
+        }})};
 
     const commentsWithNestedReplies = comments.map((comment) => {
       const nestedReplies = buildReplyTree(comment.replies);
@@ -114,16 +114,16 @@ exports.getAllComments = async (req, res, next) => {
     );
 
     const buildReplyTree = (replies, parentId = null) =>
-      replies
+      {return replies
         .filter((reply) =>
-          parentId
+          {return parentId
             ? reply.replyTo && reply.replyTo.toString() === parentId.toString()
-            : !reply.replyTo
+            : !reply.replyTo}
         )
-        .map((reply) => ({
+        .map((reply) => {return {
           ...reply,
           children: buildReplyTree(replies, reply._id),
-        }));
+        }})};
 
     const commentsWithNestedReplies = comments.map((comment) => {
       const nestedReplies = buildReplyTree(comment.replies);
@@ -282,7 +282,7 @@ exports.updateReply = async (req, res, next) => {
     }
 
     const reply = comment.replies.find(
-      (reply) => reply._id.toString() === replyId.toString()
+      (reply) => {return reply._id.toString() === replyId.toString()}
     );
 
     if (!reply) {
@@ -301,7 +301,7 @@ exports.updateReply = async (req, res, next) => {
       res,
       200,
       "Reply updated successfully",
-      updatedComment.replies.find((reply) => reply._id.toString() === replyId)
+      updatedComment.replies.find((reply) => {return reply._id.toString() === replyId})
     );
   } catch (err) {
     next(err);
@@ -340,7 +340,7 @@ exports.deleteReply = async (req, res, next) => {
       res,
       200,
       "Reply deleted successfully",
-      updatedComment.replies.find((reply) => reply._id.toString() === replyId)
+      updatedComment.replies.find((reply) => {return reply._id.toString() === replyId})
     );
   } catch (err) {
     next(err);

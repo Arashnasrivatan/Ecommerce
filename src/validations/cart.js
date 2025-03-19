@@ -6,7 +6,7 @@ const addToCartValidator = yup.object({
     .string()
     .required("Product ID is required")
     .test("is-valid-object-id", "Invalid product ID", (value) =>
-      isValidObjectId(value)
+      {return isValidObjectId(value)}
     ),
   quantity: yup
     .number()
@@ -26,7 +26,7 @@ const removeFromCartValidator = yup.object({
     .string()
     .required("Product ID is required")
     .test("is-valid-object-id", "Invalid product ID", (value) =>
-      isValidObjectId(value)
+      {return isValidObjectId(value)}
     ),
 });
 
@@ -35,7 +35,7 @@ const updateCartValidator = yup.object({
     .string()
     .required("Product ID is required")
     .test("is-valid-object-id", "Invalid product ID", (value) =>
-      isValidObjectId(value)
+      {return isValidObjectId(value)}
     ),
   quantity: yup
     .number()

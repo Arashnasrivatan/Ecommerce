@@ -240,7 +240,7 @@ exports.forgotPassword = async (req, res, next) => {
     const resetLink = `${configs.domain}/api/auth/reset-password/${resetToken}`;
 
     //! send sms
-    // const sms = sendSms(phone,[{name:"Token",value:"token"}]) //! cant send sms because of sandbox plan
+    // Const sms = sendSms(phone,[{name:"Token",value:"token"}]) //! cant send sms because of sandbox plan
 
     return response(
       res,

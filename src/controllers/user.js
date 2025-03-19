@@ -124,9 +124,9 @@ exports.addAddress = async (req, res, next) => {
       return response(res, 404, "User not found");
     }
 
-    const isDuplicateName = user.addresses.some((addr) => addr.name === name);
+    const isDuplicateName = user.addresses.some((addr) => {return addr.name === name});
     const isDuplicatePostalCode = user.addresses.some(
-      (addr) => addr.postalCode === postalCode
+      (addr) => {return addr.postalCode === postalCode}
     );
 
     if (isDuplicateName) {
@@ -170,7 +170,7 @@ exports.getAddress = async (req, res, next) => {
     }
 
     const addresses = user.addresses.filter(
-      (addr) => addr._id == req.params.id
+      (addr) => {return addr._id == req.params.id}
     );
 
     if (!addresses.length) {
@@ -214,7 +214,7 @@ exports.updateAddress = async (req, res, next) => {
 
     if (name) {
       const isDuplicateName = user.addresses.some(
-        (addr) => addr.name === name && addr._id.toString() !== id
+        (addr) => {return addr.name === name && addr._id.toString() !== id}
       );
       if (isDuplicateName) {
         return response(res, 400, "An address with this name already exists");
@@ -224,7 +224,7 @@ exports.updateAddress = async (req, res, next) => {
 
     if (postalCode) {
       const isDuplicatePostalCode = user.addresses.some(
-        (addr) => addr.postalCode === postalCode && addr._id.toString() !== id
+        (addr) => {return addr.postalCode === postalCode && addr._id.toString() !== id}
       );
       if (isDuplicatePostalCode) {
         return response(

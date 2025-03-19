@@ -37,6 +37,7 @@ const orderSchema = new mongoose.Schema(
 
     postTrackingCode: {
       type: String,
+      required: false,
     },
 
     status: {

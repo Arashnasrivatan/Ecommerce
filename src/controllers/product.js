@@ -53,9 +53,11 @@ exports.createProduct = async (req, res, next) => {
         const filterName = Object.keys(filterItem)[0];
         const filterValue = filterItem[filterName];
 
-        const filterDefinition = allFilters.find(
-          (f) => f.name.trim().toLowerCase() === filterName.trim().toLowerCase()
-        );
+        const filterDefinition = allFilters.find((f) => {
+          return (
+            f.name.trim().toLowerCase() === filterName.trim().toLowerCase()
+          );
+        });
 
         if (!filterDefinition) {
           return response(
@@ -90,7 +92,7 @@ exports.createProduct = async (req, res, next) => {
             }
             break;
 
-          case "range":
+          case "range": {
             const numericValue = Number(filterValue);
             if (isNaN(numericValue)) {
               return response(
@@ -110,6 +112,7 @@ exports.createProduct = async (req, res, next) => {
               );
             }
             break;
+          }
 
           default:
             return response(
@@ -120,6 +123,7 @@ exports.createProduct = async (req, res, next) => {
         }
       }
     } catch (err) {
+      console.log(err);
       return response(res, 400, "Invalid filterValues format");
     }
 
@@ -145,6 +149,7 @@ exports.createProduct = async (req, res, next) => {
           }
         });
       } catch (err) {
+        console.log(err);
         return response(res, 400, "Invalid customFields format");
       }
     }
@@ -188,6 +193,7 @@ exports.createProduct = async (req, res, next) => {
         await sharp(fileBuffer).png({ quality: 50 }).toFile(filePath);
       });
     } catch (err) {
+      console.log(err);
       return response(res, 500, "error uploading file");
     }
 
@@ -389,11 +395,12 @@ exports.updateProduct = async (req, res, next) => {
           try {
             for (const filterItem of filterValues) {
               const filterName = Object.keys(filterItem)[0];
-              const filterDefinition = allFilters.find(
-                (f) =>
+              const filterDefinition = allFilters.find((f) => {
+                return (
                   f.name.trim().toLowerCase() ===
                   filterName.trim().toLowerCase()
-              );
+                );
+              });
 
               if (!filterDefinition) {
                 return response(
@@ -404,6 +411,7 @@ exports.updateProduct = async (req, res, next) => {
               }
             }
           } catch (err) {
+            console.log(err);
             return response(res, 400, "Invalid filterValues format");
           }
         } else {
@@ -459,10 +467,11 @@ exports.updateProduct = async (req, res, next) => {
           const filterName = Object.keys(filterItem)[0];
           const filterValue = filterItem[filterName];
 
-          const filterDefinition = allFilters.find(
-            (f) =>
+          const filterDefinition = allFilters.find((f) => {
+            return (
               f.name.trim().toLowerCase() === filterName.trim().toLowerCase()
-          );
+            );
+          });
 
           if (!filterDefinition) {
             return response(
@@ -497,7 +506,7 @@ exports.updateProduct = async (req, res, next) => {
               }
               break;
 
-            case "range":
+            case "range": {
               const numericValue = Number(filterValue);
               if (isNaN(numericValue)) {
                 return response(
@@ -517,6 +526,7 @@ exports.updateProduct = async (req, res, next) => {
                 );
               }
               break;
+            }
 
             default:
               return response(
@@ -555,6 +565,7 @@ exports.updateProduct = async (req, res, next) => {
           }
         });
       } catch (err) {
+        console.log(err);
         return response(res, 400, "Invalid customFields format");
       }
     }
@@ -592,6 +603,7 @@ exports.updateProduct = async (req, res, next) => {
           images.push(`/images/products/${fileName}`);
         }
       } catch (err) {
+        console.log(err);
         if (images && images.length > 0) {
           for (const image of images) {
             const imagePath = path.join(configs.domain, "public", image);

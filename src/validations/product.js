@@ -31,20 +31,20 @@ const createProductValidator = yup.object().shape({
   filterValues: yup
     .array()
     .required()
-    .transform((value) => JSON.parse(value))
+    .transform((value) => {return JSON.parse(value)})
     .test(
       "filterValuesCheck",
       "filterValues must be an object with key-value pairs",
-      (value) => value === undefined || typeof value === "object"
+      (value) => {return value === undefined || typeof value === "object"}
     ),
   customFields: yup
     .array()
     .optional()
-    .transform((value) => JSON.parse(value))
+    .transform((value) => {return JSON.parse(value)})
     .test(
       "customFieldsCheck",
       "customFields must be an object with key-value pairs",
-      (value) => value === undefined || typeof value === "object"
+      (value) => {return value === undefined || typeof value === "object"}
     ),
 });
 
@@ -64,7 +64,7 @@ const updateProductValidator = yup.object().shape({
     .test(
       "is-valid-objectid",
       "subCategory ID must be a valid ObjectId",
-      (value) => value === null || value === undefined || isValidObjectId(value)
+      (value) => {return value === null || value === undefined || isValidObjectId(value)}
     ),
   stock: yup
     .number()
@@ -75,20 +75,20 @@ const updateProductValidator = yup.object().shape({
   filterValues: yup
     .array()
     .optional()
-    .transform((value) => JSON.parse(value))
+    .transform((value) => {return JSON.parse(value)})
     .test(
       "filterValuesCheck",
       "filterValues must be an object with key-value pairs",
-      (value) => value === undefined || typeof value === "object"
+      (value) => {return value === undefined || typeof value === "object"}
     ),
   customFields: yup
     .array()
     .optional()
-    .transform((value) => JSON.parse(value))
+    .transform((value) => {return JSON.parse(value)})
     .test(
       "customFieldsCheck",
       "customFields must be an object with key-value pairs",
-      (value) => value === undefined || typeof value === "object"
+      (value) => {return value === undefined || typeof value === "object"}
     ),
 });
 

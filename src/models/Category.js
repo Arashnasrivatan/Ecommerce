@@ -39,7 +39,7 @@ const categorySchema = new mongoose.Schema({
         options: {
           type: [String],
           validate: {
-            validator: (options) => Array.isArray(options),
+            validator: (options) => {return Array.isArray(options)},
           },
         },
         min: {

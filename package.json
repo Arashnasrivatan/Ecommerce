@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "./src/server.js",
   "scripts": {
-    "dev": "dotenv -e .env -- nodemon ./src/server.js"
+    "dev": "dotenv -e .env -- nodemon ./src/server.js",
+    "lint": "eslint",
+    "lintfix": "eslint --fix"
   },
   "keywords": [],
   "author": "Arashnasrivatan",
@@ -29,7 +31,10 @@
     "yup": "^1.6.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
     "dotenv-cli": "^7.4.2",
+    "eslint": "^9.22.0",
+    "globals": "^16.0.0",
     "nodemon": "^3.1.4",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"

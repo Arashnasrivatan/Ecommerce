@@ -33,17 +33,17 @@ const isLocationInIran = (lat, lng) => {
   );
 };
 
-const createPaginationData = (page, limit, totalCount, resource) => ({
+const createPaginationData = (page, limit, totalCount, resource) => {return {
   page,
   limit,
   totalPage: Math.ceil(totalCount / limit),
   ["total" + resource]: totalCount,
-});
+}};
 
 const hasDuplicateKeysInArray = (arr) => {
   if (!Array.isArray(arr)) return false;
 
-  const allKeys = arr.flatMap((obj) => Object.keys(obj));
+  const allKeys = arr.flatMap((obj) => {return Object.keys(obj)});
   const uniqueKeys = new Set(allKeys);
 
   return allKeys.length !== uniqueKeys.size;

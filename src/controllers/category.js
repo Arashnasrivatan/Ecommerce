@@ -98,7 +98,7 @@ exports.deleteCategory = async (req, res, next) => {
       deletedSubcategories = await Category.find({ parent: categoryId });
       await Category.deleteMany({ parent: categoryId });
 
-      const subCategoryIds = deletedSubcategories.map((sub) => sub._id);
+      const subCategoryIds = deletedSubcategories.map((sub) => {return sub._id});
 
       deletedSubSubCategories = await SubCategory.deleteMany({
         parent: { $in: subCategoryIds },

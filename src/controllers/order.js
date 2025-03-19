@@ -24,9 +24,13 @@ exports.getAllOrders = async (req, res, next) => {
 
     orders.forEach((order) => {
       order.totalPrice = order.items.reduce(
-        (total, item) => total + item.price * item.quantity,
+        (total, item) => {return total + item.price * item.quantity},
         0
       );
+      const selectedAddress = user.addresses.find(
+        (addr) => {return addr._id.toString() === order.shippingAddress.toString()}
+      );
+      order.shippingAddress = selectedAddress;
     });
 
     const countOrders = await Order.countDocuments(filters);
@@ -42,7 +46,6 @@ exports.getAllOrders = async (req, res, next) => {
   }
 };
 
-// not tested yet | test after complete checkout Controller&Router
 exports.updateOrder = async (req, res, next) => {
   try {
     let { postTrackingCode, status } = req.body;

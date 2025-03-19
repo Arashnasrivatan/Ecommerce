@@ -2,7 +2,7 @@ const response = require("../utils/response");
 
 module.exports =
   (validator, needsBody = false) =>
-  async (req, res, next) => {
+  {return async (req, res, next) => {
     try {
       const validatedBody = await validator.validate(req.body, {
         abortEarly: false,
@@ -14,4 +14,4 @@ module.exports =
     } catch (err) {
       return response(res, 400, err.errors);
     }
-  };
+  }};

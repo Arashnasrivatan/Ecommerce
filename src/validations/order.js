@@ -8,7 +8,7 @@ const updateOrderValidator = yup.object({
   postTrackingCode: yup
     .string()
     .optional("Post tracking code is required")
-    .length(24, "postal traking code must be 24 characters"), // iran post status tracking code
+    .length(24, "postal traking code must be 24 characters"), // Iran post status tracking code
 });
 
 module.exports = {

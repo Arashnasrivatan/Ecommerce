@@ -21,7 +21,7 @@ exports.createCheckout = async (req, res, next) => {
     }
 
     const selectedAddress = user.addresses.find(
-      (addr) => addr._id.toString() === shippingAddress
+      (addr) => {return addr._id.toString() === shippingAddress}
     );
 
     if (!selectedAddress) {
@@ -56,11 +56,11 @@ exports.createCheckout = async (req, res, next) => {
       return response(res, 400, "Total price is more than 2,000,000,000 Rial");
     }
 
-    const checkoutItems = cart.items.map((item) => ({
+    const checkoutItems = cart.items.map((item) => {return {
       product: item.product._id,
       quantity: item.quantity,
       price: item.product.priceInRial,
-    }));
+    }});
 
     const newCheckout = await Checkout.create({
       user: user._id,
@@ -125,6 +125,7 @@ exports.verifyCheckOut = async (req, res, next) => {
       authority: checkout.authority,
       items: checkout.items,
       shippingAddress: checkout.shippingAddress,
+      postTrackingCode: null
     });
 
     await order.save();
@@ -153,7 +154,7 @@ exports.verifyCheckOut = async (req, res, next) => {
     }
 
     const selectedAddress = user.addresses.find(
-      (addr) => addr._id.toString() === order.shippingAddress.toString()
+      (addr) => {return addr._id.toString() === order.shippingAddress.toString()}
     );
 
     orderDetails.shippingAddress = selectedAddress;

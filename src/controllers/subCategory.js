@@ -2,7 +2,6 @@ const response = require("./../utils/response");
 const SubCategory = require("./../models/SubCategory");
 const ParentCategory = require("./../models/Category");
 const { isValidObjectId } = require("mongoose");
-const slugify = require("slugify");
 
 exports.getAllSubCategories = async (req, res, next) => {
   try {

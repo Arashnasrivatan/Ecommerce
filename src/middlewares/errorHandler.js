@@ -1,6 +1,6 @@
 const response = require("../utils/response");
 
-exports.errorHandler = async (err, req, res, next) => {
+exports.errorHandler = async (err, req, res) => {
   try {
     if (err.name === "ValidationError") {
       const errors = Object.keys(err.errors).reduce((acc, key) => {
@@ -33,4 +33,6 @@ exports.errorHandler = async (err, req, res, next) => {
   } catch (error) {
     console.error(error);
   }
+
 };
+

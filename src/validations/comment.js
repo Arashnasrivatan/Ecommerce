@@ -6,7 +6,7 @@ const createCommentValidator = yup.object().shape({
     .string()
     .required("Product ID is required")
     .test("is-valid-object-id", "Invalid product ID", (value) =>
-      isValidObjectId(value)
+      {return isValidObjectId(value)}
     ),
 
   rating: yup.number().required("Rating is required").min(1).max(5),

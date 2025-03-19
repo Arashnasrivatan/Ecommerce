@@ -6,7 +6,7 @@ const createCheckoutValidator = yup.object({
     .string()
     .required()
     .test("shippingAddress", "Invalid shipping address", (value) =>
-      isValidObjectId(value)
+      {return isValidObjectId(value)}
     ),
 });
 

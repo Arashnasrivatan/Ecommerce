@@ -17,7 +17,7 @@ exports.getAll = async (req, res, next) => {
 
     const totalBanedUsers = await Ban.countDocuments();
 
-    const Pagination = createPaginationData(
+    const pagination = createPaginationData(
       page,
       limit,
       totalBanedUsers,

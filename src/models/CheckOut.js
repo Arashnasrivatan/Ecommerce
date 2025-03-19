@@ -43,7 +43,7 @@ const CheckoutSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
       required: true,
-      default: () => new Date(Date.now() + 7 * 60 * 1000), // 7 Min
+      default: () => {return new Date(Date.now() + 7 * 60 * 1000)}, // 7 Min
     },
   },
   { timestamps: true }

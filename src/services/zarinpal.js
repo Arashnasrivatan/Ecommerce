@@ -3,15 +3,15 @@ const configs = require("./../configs");
 exports.createPayment = async ({ amountInRial, description, mobile }) => {
   try {
     const response = await fetch(
-      `${process.env.ZARINPAL_API_BASE_URL}request.json`,
+      `${configs.zarinpal.ZARINPAL_API_BASE_URL}request.json`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          merchant_id: process.env.ZARINPAL_MERCHANT,
-          callback_url: process.env.ZARINPAL_CALLBACK_URL,
+          merchant_id: configs.zarinpal.ZARINPAL_MERCHANT,
+          callback_url: configs.zarinpal.ZARINPAL_CALLBACK_URL,
           amount: amountInRial,
           description,
           metaData: mobile,
@@ -23,7 +23,7 @@ exports.createPayment = async ({ amountInRial, description, mobile }) => {
     
     return {
       authority: data.data.authority,
-      PaymentUrl: process.env.ZARINPAL_PAYMENT_BASE_URL + data.data.authority,
+      PaymentUrl: configs.zarinpal.ZARINPAL_PAYMENT_BASE_URL + data.data.authority,
     };
   } catch (error) {
     throw new Error(error.response ? error.response.data : error.message);
@@ -33,14 +33,14 @@ exports.createPayment = async ({ amountInRial, description, mobile }) => {
 exports.verifyPayment = async function ({ amountInRial, authority }) {
   try {
     const response = await fetch(
-      `${process.env.ZARINPAL_API_BASE_URL}verify.json`,
+      `${configs.zarinpal.ZARINPAL_API_BASE_URL}verify.json`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          merchant_id: process.env.ZARINPAL_MERCHANT,
+          merchant_id: configs.zarinpal.ZARINPAL_MERCHANT,
           amount: amountInRial,
           authority,
         }),
