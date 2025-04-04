@@ -1,0 +1,121 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "E-Commerce API",
+    "version": "1.0.0",
+    "description": "E-Commerce API by Arashnasrivatan `coded while learning`",
+    "contact": {
+      "name": "Arashnasrivatan",
+      "url": "https://arashnasri.com",
+      "email": "arashnasrivatan@gmail.com"
+    }
+  },
+  "host": "http://localhost:4000",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "Auth 🔐",
+      "description": "Authentication related endpoints"
+    },
+    {
+      "name": "Users 🧑‍💻",
+      "description": "Users related endpoints"
+    },
+    {
+      "name": "Bans 🚫",
+      "description": "Bans related endpoints"
+    },
+    {
+      "name": "Categories 📂",
+      "description": "Categories&subCategories related endpoints"
+    },
+    {
+      "name": "SubCategories 📂",
+      "description": "Sub Sub Categories related endpoints"
+    },
+    {
+      "name": "Products 🛍️",
+      "description": "Products related endpoints"
+    },
+    {
+      "name": "Comments 💬",
+      "description": "Comments related endpoints"
+    },
+    {
+      "name": "Cart 🛒",
+      "description": "Cart related endpoints"
+    },
+    {
+      "name": "Checkout 🛒",
+      "description": "Checkout related endpoints"
+    },
+    {
+      "name": "Orders 🛒",
+      "description": "Orders related endpoints"
+    },
+    {
+      "name": "Access Tokens 🔑",
+      "description": "Endpoints related to access tokens"
+    },
+    {
+      "name": "Refresh Tokens 🔄",
+      "description": "Endpoints related to refresh tokens"
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "AccessToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "To access protected endpoints, you must send the access token in the Authorization header as Bearer [token]"
+      },
+      "RefreshToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "To refresh the access token, send the refresh token in the Authorization header as Bearer [token]"
+      }
+    },
+    "schemas": {
+      "AccessToken": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT access token"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "description": "Expiration time in seconds"
+          }
+        }
+      },
+      "RefreshToken": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT refresh token"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "description": "Expiration time in seconds"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {}
+}

@@ -18,6 +18,7 @@ const commentRoutes = require("./routes/comment");
 const cartRoutes = require("./routes/cart");
 const orderRoutes = require("./routes/order");
 const checkoutRoutes = require("./routes/checkout");
+const { swaggerUi, specs } = require("./docs/swagger");
 
 const app = express();
 
@@ -58,8 +59,17 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/checkout", checkoutRoutes);
 
-
-//TODO Swagger
+app.use(
+  "/api/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(specs, {
+    explorer: true,
+    customCss: ".swagger-ui .topbar { display: none }",
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  })
+);
 
 //* 404 Err Handler
 app.use((req, res) => {
