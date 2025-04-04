@@ -52,14 +52,6 @@
     {
       "name": "Orders 🛒",
       "description": "Orders related endpoints"
-    },
-    {
-      "name": "Access Tokens 🔑",
-      "description": "Endpoints related to access tokens"
-    },
-    {
-      "name": "Refresh Tokens 🔄",
-      "description": "Endpoints related to refresh tokens"
     }
   ],
   "servers": [
