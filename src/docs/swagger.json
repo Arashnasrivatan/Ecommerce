@@ -76,6 +76,15 @@
       }
     },
     "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "statusCode": { "type": "number" },
+          "message": { "type": "string" },
+          "data": { "type": "object" }
+        }
+      },
       "AccessToken": {
         "type": "object",
         "properties": {
@@ -101,6 +110,39 @@
             "description": "Expiration time in seconds"
           }
         }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "fullname": { "type": "string", "required": true },
+          "username": { "type": "string", "required": true },
+          "phone": { "type": "string", "required": true },
+          "role": { "type": "string" },
+          "password": { "type": "string", "required": true },
+          "addresses": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Address" }
+          },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        }
+      },
+      "Address": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "required": true },
+          "postalCode": { "type": "string", "required": true },
+          "location": {
+            "type": "object",
+            "properties": {
+              "lat": { "type": "number", "required": true },
+              "lng": { "type": "number", "required": true },
+              "formatedLocation": { "type": "string", "required": false }
+            }
+          },
+          "address": { "type": "string", "required": true }
+        }
       }
     }
   },
@@ -109,5 +151,317 @@
       "BearerAuth": []
     }
   ],
-  "paths": {}
+  "paths": {
+    "/api/auth/sent": {
+      "post": {
+        "summary": "Send a verification code to the user's phone number",
+        "description": "Send a verification code to the user's phone number for registration or verification purposes. Will check if the user is banned, if the phone number already exists, and whether a recent OTP has been sent.",
+        "tags": ["Auth 🔐"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone": {
+                    "type": "string",
+                    "example": "09123456789",
+                    "description": "User's phone number in the format 09XXXXXXXX"
+                  }
+                },
+                "required": ["phone"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Otp Sent Successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "otpCode": {
+                          "type": "string",
+                          "example": "123456",
+                          "description": "The OTP code (only provided in test/sandbox environment)"
+                        }
+                      }
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Various validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "a user exist with this info"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Otp Already Sent Try Again After 2:30"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "expired": { "type": "boolean", "example": false },
+                            "remainingTime": {
+                              "type": "string",
+                              "example": "2:30"
+                            }
+                          }
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Failed To Send Sms"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - User is banned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 403 },
+                    "message": { "type": "string", "example": "You are banned" }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/verify": {
+      "post": {
+        "summary": "Verify OTP and register user",
+        "description": "Verify the OTP code sent to the user's phone number and create a new user account if verification is successful",
+        "tags": ["Auth 🔐"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullname": {
+                    "type": "string",
+                    "example": "John Doe",
+                    "description": "User's full name"
+                  },
+                  "username": {
+                    "type": "string",
+                    "example": "johndoe",
+                    "description": "Unique username for the user"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "09123456789",
+                    "description": "User's phone number that received the OTP"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "StrongPassword_123",
+                    "description": "User's chosen password"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "1234",
+                    "description": "One-time password (verification code) received via SMS"
+                  }
+                },
+                "required": ["fullname", "username", "phone", "password", "otp"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 201 },
+                    "message": {
+                      "type": "string",
+                      "example": "User Registered Successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                          "description": "JWT access token for authenticated requests"
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                          "description": "JWT refresh token to obtain new access tokens"
+                        }
+                      }
+                    }
+                  },
+                  "required": ["success", "statusCode", "message", "data"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Various validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "a user exist with this username"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Otp Expired"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid Otp"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - User is banned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 403 },
+                    "message": { "type": "string", "example": "You are banned" }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

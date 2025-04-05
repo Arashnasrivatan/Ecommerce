@@ -62,7 +62,7 @@ exports.sent = async (req, res, next) => {
     if (!expired) {
       return response(
         res,
-        200,
+        400,
         `Otp Already Sent Try Again After ${remainingTime}`,
         { expired, remainingTime }
       );
