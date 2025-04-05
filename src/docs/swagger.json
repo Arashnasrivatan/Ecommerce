@@ -953,6 +953,85 @@
           }
         }
       }
+    },
+    "/api/auth/logout": {
+      "get": {
+        "summary": "Logout user",
+        "description": "Invalidate user's refresh token and log them out of the system",
+        "tags": ["Auth 🔐"],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Logout Successfully"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Logout failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 400 },
+                    "message": { "type": "string", "example": "Logout failed" }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired access token",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
