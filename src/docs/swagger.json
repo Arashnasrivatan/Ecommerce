@@ -1622,6 +1622,112 @@
             }
           }
         }
+      },
+      "delete": {
+        "summary": "Unban a user",
+        "description": "Remove a user from the ban list by their phone number (admin only)",
+        "tags": ["Bans 🚫", "Users 🧑‍💻"],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "path",
+            "required": true,
+            "description": "Phone number of the user to unban",
+            "schema": {
+              "type": "string"
+            },
+            "example": "09123456789"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully unbanned user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "User unBaned Successfully"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Not an admin",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Banned user not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "there is no Baned User with this phone number"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
