@@ -1199,6 +1199,132 @@
           }
         }
       }
+    },
+    "/api/users/change-password": {
+      "post": {
+        "summary": "Change user password",
+        "description": "Allow authenticated users to change their password by providing their old password and a new one",
+        "tags": ["Users 🧑‍💻"],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "example": "CurrentPassword_123",
+                    "description": "User's current password"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "example": "NewStrongPassword_456",
+                    "description": "New password to set"
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "example": "NewStrongPassword_456",
+                    "description": "Confirmation of the new password (must match newPassword)"
+                  }
+                },
+                "required": ["oldPassword", "newPassword", "confirmPassword"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Password updated successfully"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "old Password is incorect"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "new password and confirm password do not match"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

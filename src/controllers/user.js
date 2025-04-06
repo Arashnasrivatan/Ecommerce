@@ -2,7 +2,6 @@ const response = require("./../utils/response");
 const User = require("./../models/User");
 const bcrypt = require("bcrypt");
 const { isValidObjectId } = require("mongoose");
-const { getLocationDetails, isLocationInIran } = require("./../utils/index");
 
 exports.editProfile = async (req, res, next) => {
   try {
