@@ -22,9 +22,9 @@ exports.editProfile = async (req, res, next) => {
       if (!isValidObjectId(user_id)) {
         return response(res, 400, "Invalid user_id");
       }
-      user = await User.findById(user_id);
+      user = await User.findById(user_id).select("-password");
     } else {
-      user = await User.findById(req.user._id);
+      user = await User.findById(req.user._id).select("-password");
     }
 
     if (!user) {
