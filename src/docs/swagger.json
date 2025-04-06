@@ -26,6 +26,10 @@
       "description": "Bans related endpoints"
     },
     {
+      "name": "Addresses 📍",
+      "description": "Addresses related endpoints"
+    },
+    {
       "name": "Categories 📂",
       "description": "Categories&subCategories related endpoints"
     },
@@ -126,6 +130,14 @@
           },
           "createdAt": { "type": "string" },
           "updatedAt": { "type": "string" }
+        }
+      },
+      "Ban": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "phone": { "type": "string", "required": true },
+          "banReason": { "type": "string", "required": false }
         }
       },
       "Address": {
@@ -1300,6 +1312,141 @@
                 "schema": {
                   "type": "string",
                   "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/ban": {
+      "get": {
+        "summary": "Get all banned users",
+        "description": "Retrieve a list of all banned users (admin only)",
+        "tags": ["Bans 🚫", "Users 🧑‍💻"],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved banned users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Banned users fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "currentPage": { "type": "integer", "example": 1 },
+                            "totalPages": { "type": "integer", "example": 5 },
+                            "totalItems": { "type": "integer", "example": 47 },
+                            "itemsPerPage": { "type": "integer", "example": 10 }
+                          }
+                        },
+                        "banedUsers": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Ban"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["success", "statusCode", "message", "data"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Not an admin",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No banned users found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "No banned users found on this page"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
                 }
               }
             }
