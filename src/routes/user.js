@@ -32,6 +32,11 @@ router
     controller.changePassword
   );
 
+router.route("/delete-account").delete(
+  passport.authenticate("accessToken", { session: false }),
+  controller.deleteAccount
+);
+
 //* Ban Routes
 router
   .route("/ban")

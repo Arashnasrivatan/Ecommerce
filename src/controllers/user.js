@@ -1,5 +1,8 @@
 const response = require("./../utils/response");
 const User = require("./../models/User");
+const Cart = require("./../models/Cart");
+const Order = require("./../models/Order");
+const Checkout = require("./../models/Checkout");
 const bcrypt = require("bcrypt");
 const { isValidObjectId } = require("mongoose");
 
@@ -70,6 +73,48 @@ exports.changePassword = async (req, res, next) => {
 
     await user.save();
     return response(res, 200, "Password updated successfully");
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteAccount = async (req, res, next) => {
+  try {
+    const { user_id } = req.query;
+    const currentUser = req.user;
+    const isAdmin = currentUser.role === "ADMIN";
+
+    if (isAdmin && user_id) {
+      if (!isValidObjectId(user_id)) {
+        return response(res, 400, "Invalid user ID");
+      }
+
+      const targetUser = await User.findById(user_id);
+
+      if (!targetUser) {
+        return response(res, 404, "User not found");
+      }
+
+      if (targetUser.role === "ADMIN") {
+        return response(res, 403, "You cannot delete another admin's account");
+      }
+
+      await Cart.deleteMany({ user: targetUser._id });
+      await Order.deleteMany({ user: targetUser._id });
+      await Checkout.deleteMany({ user: targetUser._id });
+      await targetUser.deleteOne();
+      return response(res, 200, "Account deleted successfully");
+    }
+
+    if (isAdmin) {
+      return response(res, 403, "Admins cannot delete their own accounts");
+    }
+
+    await Cart.deleteMany({ user: currentUser._id });
+    await Order.deleteMany({ user: currentUser._id });
+    await Checkout.deleteMany({ user: currentUser._id });
+    await currentUser.deleteOne();
+    return response(res, 200, "Your account has been deleted successfully");
   } catch (err) {
     next(err);
   }
