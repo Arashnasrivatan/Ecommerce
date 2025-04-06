@@ -1,5 +1,8 @@
 const response = require("./../utils/response");
 const User = require("./../models/User");
+const Cart = require("./../models/Cart");
+const Order = require("./../models/Order");
+const Checkout = require("./../models/Checkout");
 const Ban = require("./../models/Ban");
 const { createPaginationData } = require("./../utils/index");
 
@@ -50,6 +53,9 @@ exports.ban = async (req, res, next) => {
 
     const banedUser = await Ban.create({ phone, banReason });
 
+    await Cart.deleteMany({ user: user._id });
+    await Order.deleteMany({ user: user._id });
+    await Checkout.deleteMany({ user: user._id });
     await user.deleteOne();
 
     return response(res, 200, "User Baned Successfully", {
