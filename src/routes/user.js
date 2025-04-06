@@ -1,5 +1,6 @@
 const express = require("express");
 const controller = require("./../controllers/user");
+const addressController = require("./../controllers/address");
 const banController = require("./../controllers/ban");
 const passport = require("passport");
 const validate = require("./../middlewares/validate");
@@ -59,28 +60,28 @@ router
   .route("/addresses")
   .get(
     passport.authenticate("accessToken", { session: false }),
-    controller.getAddresses
+    addressController.getAddresses
   )
   .post(
     passport.authenticate("accessToken", { session: false }),
     validate(addAddressSchema),
-    controller.addAddress
+    addressController.addAddress
   );
 
 router
   .route("/addresses/:id")
   .get(
     passport.authenticate("accessToken", { session: false }),
-    controller.getAddress
+    addressController.getAddress
   )
   .patch(
     passport.authenticate("accessToken", { session: false }),
     validate(updateAddressSchema),
-    controller.updateAddress
+    addressController.updateAddress
   )
   .delete(
     passport.authenticate("accessToken", { session: false }),
-    controller.deleteAddress
+    addressController.deleteAddress
   );
 
 module.exports = router;
