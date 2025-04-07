@@ -7,29 +7,32 @@ const iranBounds = {
   lngMax: 63.5,
 };
 
-const profileSchema = yup.object().shape({
-  fullname: yup
-    .string()
-    .optional()
-    .min(3, "Fullname must be at least 3 characters long")
-    .max(50, "Fullname cannot be longer than 50 characters"),
-  username: yup
-    .string()
-    .optional()
-    .min(3, "Username must be at least 3 characters long")
-    .max(20, "Username cannot be longer than 20 characters")
-    .matches(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores"
-    ),
-}).test(
-  'at-least-one-field',
-  'Either fullname or username is required',
-  function (value) {
-    const { fullname, username } = value;
-    return !!(fullname || username);
-  }
-);
+const profileSchema = yup
+  .object()
+  .shape({
+    fullname: yup
+      .string()
+      .optional()
+      .min(3, "Fullname must be at least 3 characters long")
+      .max(50, "Fullname cannot be longer than 50 characters"),
+    username: yup
+      .string()
+      .optional()
+      .min(3, "Username must be at least 3 characters long")
+      .max(20, "Username cannot be longer than 20 characters")
+      .matches(
+        /^[a-zA-Z0-9_]+$/,
+        "Username can only contain letters, numbers, and underscores"
+      ),
+  })
+  .test(
+    "at-least-one-field",
+    "Either fullname or username is required",
+    function (value) {
+      const { fullname, username } = value;
+      return !!(fullname || username);
+    }
+  );
 
 const changeSchema = yup.object().shape({
   oldPassword: yup
@@ -66,45 +69,52 @@ const banSchema = yup.object().shape({
 });
 
 const addAddressSchema = yup.object().shape({
-  name: yup.string().required('Name is required'),
+  name: yup.string().required("Name is required"),
   postalCode: yup
     .string()
-    .required('Postal code is required')
-    .matches(/\b(?!(\d)\1{3})[13-9]{4}[1346-9][013-9]{5}\b/, 'Postal code must be exactly 10 digits'), // IRAN Postal Code Length
+    .required("Postal code is required")
+    .length(10, "Postal code must be exactly 10 digits")
+    .matches(
+      /\b(?!(\d)\1{3})[13-9]{4}[1346-9][013-9]{5}\b/,
+      "please enter a valid postal code"
+    ), // IRAN Postal Code Length
   location: yup.object().shape({
     lat: yup
-    .number()
-    .required('Latitude is required')
-    .min(iranBounds.latMin, `Latitude must be at least ${iranBounds.latMin}`)
-    .max(iranBounds.latMax, `Latitude must be at most ${iranBounds.latMax}`),
-  lng: yup
-    .number()
-    .required('Longitude is required')
-    .min(iranBounds.lngMin, `Longitude must be at least ${iranBounds.lngMin}`)
-    .max(iranBounds.lngMax, `Longitude must be at most ${iranBounds.lngMax}`),
+      .number()
+      .required("Latitude is required")
+      .min(iranBounds.latMin, `Latitude must be at least ${iranBounds.latMin}`)
+      .max(iranBounds.latMax, `Latitude must be at most ${iranBounds.latMax}`),
+    lng: yup
+      .number()
+      .required("Longitude is required")
+      .min(iranBounds.lngMin, `Longitude must be at least ${iranBounds.lngMin}`)
+      .max(iranBounds.lngMax, `Longitude must be at most ${iranBounds.lngMax}`),
   }),
-  address: yup.string().required('Address is required'),
+  address: yup.string().required("Address is required"),
 });
 
 const updateAddressSchema = yup.object().shape({
-  name: yup.string().optional('Name is required'),
+  name: yup.string().optional("Name is required"),
   postalCode: yup
     .string()
-    .optional('Postal code is required')
-    .matches(/\b(?!(\d)\1{3})[13-9]{4}[1346-9][013-9]{5}\b/, 'Postal code must be exactly 10 digits'), // IRAN Postal Code Length
+    .optional("Postal code is required")
+    .matches(
+      /\b(?!(\d)\1{3})[13-9]{4}[1346-9][013-9]{5}\b/,
+      "Postal code must be exactly 10 digits"
+    ), // IRAN Postal Code Length
   location: yup.object().shape({
     lat: yup
-    .number()
-    .optional('Latitude is required')
-    .min(iranBounds.latMin, `Latitude must be at least ${iranBounds.latMin}`)
-    .max(iranBounds.latMax, `Latitude must be at most ${iranBounds.latMax}`),
-  lng: yup
-    .number()
-    .optional('Longitude is required')
-    .min(iranBounds.lngMin, `Longitude must be at least ${iranBounds.lngMin}`)
-    .max(iranBounds.lngMax, `Longitude must be at most ${iranBounds.lngMax}`),
+      .number()
+      .optional("Latitude is required")
+      .min(iranBounds.latMin, `Latitude must be at least ${iranBounds.latMin}`)
+      .max(iranBounds.latMax, `Latitude must be at most ${iranBounds.latMax}`),
+    lng: yup
+      .number()
+      .optional("Longitude is required")
+      .min(iranBounds.lngMin, `Longitude must be at least ${iranBounds.lngMin}`)
+      .max(iranBounds.lngMax, `Longitude must be at most ${iranBounds.lngMax}`),
   }),
-  address: yup.string().optional('Address is required'),
+  address: yup.string().optional("Address is required"),
 });
 
 module.exports = {
