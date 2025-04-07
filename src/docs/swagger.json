@@ -155,6 +155,35 @@
           },
           "address": { "type": "string", "required": true }
         }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": {
+            "type": "string",
+            "required": true,
+            "trim": true
+          },
+          "slug": {
+            "type": "string",
+            "required": true,
+            "trim": true
+          },
+          "parent": {
+            "type": "string",
+            "description": "ID of the parent category (optional)"
+          },
+          "filters": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Array of filter names for the category"
+          },
+          "subCategories": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Category" }
+          }
+        }
       }
     }
   },
@@ -2381,7 +2410,7 @@
                       },
                       "lng": {
                         "type": "number",
-                        "example": 51.3890,
+                        "example": 51.389,
                         "description": "Longitude coordinate"
                       }
                     }
@@ -2406,7 +2435,10 @@
                   "properties": {
                     "success": { "type": "boolean", "example": true },
                     "statusCode": { "type": "integer", "example": 200 },
-                    "message": { "type": "string", "example": "Address updated successfully" },
+                    "message": {
+                      "type": "string",
+                      "example": "Address updated successfully"
+                    },
                     "data": { "$ref": "#/components/schemas/Address" }
                   },
                   "required": ["success", "statusCode", "message", "data"]
@@ -2425,7 +2457,10 @@
                       "properties": {
                         "success": { "type": "boolean", "example": false },
                         "statusCode": { "type": "integer", "example": 400 },
-                        "message": { "type": "string", "example": "Invalid user_id" }
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid user_id"
+                        }
                       },
                       "required": ["success", "statusCode", "message"]
                     },
@@ -2434,7 +2469,10 @@
                       "properties": {
                         "success": { "type": "boolean", "example": false },
                         "statusCode": { "type": "integer", "example": 400 },
-                        "message": { "type": "string", "example": "Invalid address_id" }
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid address_id"
+                        }
                       },
                       "required": ["success", "statusCode", "message"]
                     },
@@ -2443,7 +2481,10 @@
                       "properties": {
                         "success": { "type": "boolean", "example": false },
                         "statusCode": { "type": "integer", "example": 400 },
-                        "message": { "type": "string", "example": "An address with this name already exists" }
+                        "message": {
+                          "type": "string",
+                          "example": "An address with this name already exists"
+                        }
                       },
                       "required": ["success", "statusCode", "message"]
                     },
@@ -2452,7 +2493,10 @@
                       "properties": {
                         "success": { "type": "boolean", "example": false },
                         "statusCode": { "type": "integer", "example": 400 },
-                        "message": { "type": "string", "example": "An address with this postal code already exists" }
+                        "message": {
+                          "type": "string",
+                          "example": "An address with this postal code already exists"
+                        }
                       },
                       "required": ["success", "statusCode", "message"]
                     },
@@ -2461,7 +2505,10 @@
                       "properties": {
                         "success": { "type": "boolean", "example": false },
                         "statusCode": { "type": "integer", "example": 400 },
-                        "message": { "type": "string", "example": "Location must be within Iran" }
+                        "message": {
+                          "type": "string",
+                          "example": "Location must be within Iran"
+                        }
                       },
                       "required": ["success", "statusCode", "message"]
                     }
@@ -2490,7 +2537,10 @@
                   "properties": {
                     "success": { "type": "boolean", "example": false },
                     "statusCode": { "type": "integer", "example": 404 },
-                    "message": { "type": "string", "example": "Address not found" }
+                    "message": {
+                      "type": "string",
+                      "example": "Address not found"
+                    }
                   },
                   "required": ["success", "statusCode", "message"]
                 }
@@ -2506,7 +2556,10 @@
                   "properties": {
                     "success": { "type": "boolean", "example": false },
                     "statusCode": { "type": "integer", "example": 500 },
-                    "message": { "type": "string", "example": "Internal Server Error" }
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
                   },
                   "required": ["success", "statusCode", "message"]
                 }
@@ -2554,7 +2607,10 @@
                   "properties": {
                     "success": { "type": "boolean", "example": true },
                     "statusCode": { "type": "integer", "example": 200 },
-                    "message": { "type": "string", "example": "Address deleted successfully" },
+                    "message": {
+                      "type": "string",
+                      "example": "Address deleted successfully"
+                    },
                     "data": { "$ref": "#/components/schemas/Address" }
                   },
                   "required": ["success", "statusCode", "message", "data"]
@@ -2571,7 +2627,10 @@
                   "properties": {
                     "success": { "type": "boolean", "example": false },
                     "statusCode": { "type": "integer", "example": 400 },
-                    "message": { "type": "string", "example": "Invalid address id" }
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid address id"
+                    }
                   },
                   "required": ["success", "statusCode", "message"]
                 }
@@ -2598,7 +2657,10 @@
                   "properties": {
                     "success": { "type": "boolean", "example": false },
                     "statusCode": { "type": "integer", "example": 404 },
-                    "message": { "type": "string", "example": "Address not found" }
+                    "message": {
+                      "type": "string",
+                      "example": "Address not found"
+                    }
                   },
                   "required": ["success", "statusCode", "message"]
                 }
@@ -2614,7 +2676,66 @@
                   "properties": {
                     "success": { "type": "boolean", "example": false },
                     "statusCode": { "type": "integer", "example": 500 },
-                    "message": { "type": "string", "example": "Internal Server Error" }
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/category": {
+      "get": {
+        "summary": "Get all categories",
+        "description": "Retrieve all categories with their subcategories in a hierarchical structure",
+        "tags": ["Categories 📂"],
+        "responses": {
+          "200": {
+            "description": "Categories retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Categories fetched successfully !!"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "categories": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Category" }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["success", "statusCode", "message", "data"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
                   },
                   "required": ["success", "statusCode", "message"]
                 }
