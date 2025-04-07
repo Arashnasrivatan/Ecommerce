@@ -2324,6 +2324,196 @@
             }
           }
         }
+      },
+      "patch": {
+        "summary": "Update address",
+        "description": "Update an existing address. Regular users can only update their own addresses. Admins can update any user's addresses by providing a user_id query parameter.",
+        "tags": ["Addresses 📍"],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the address to update",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "description": "ID of the user whose address to update (admin only)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Home",
+                    "description": "Name/label for the address"
+                  },
+                  "postalCode": {
+                    "type": "string",
+                    "example": "1234567890",
+                    "description": "Postal code of the address"
+                  },
+                  "location": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "example": 35.6892,
+                        "description": "Latitude coordinate"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "example": 51.3890,
+                        "description": "Longitude coordinate"
+                      }
+                    }
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "123 Main St, Tehran, Iran",
+                    "description": "Full address text"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Address updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": { "type": "string", "example": "Address updated successfully" },
+                    "data": { "$ref": "#/components/schemas/Address" }
+                  },
+                  "required": ["success", "statusCode", "message", "data"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Various validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": { "type": "string", "example": "Invalid user_id" }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": { "type": "string", "example": "Invalid address_id" }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": { "type": "string", "example": "An address with this name already exists" }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": { "type": "string", "example": "An address with this postal code already exists" }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": { "type": "string", "example": "Location must be within Iran" }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Address or user not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": { "type": "string", "example": "Address not found" }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": { "type": "string", "example": "Internal Server Error" }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
