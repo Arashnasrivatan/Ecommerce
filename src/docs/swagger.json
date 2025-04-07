@@ -176,12 +176,24 @@
           },
           "filters": {
             "type": "array",
-            "items": { "type": "string" },
-            "description": "Array of filter names for the category"
-          },
-          "subCategories": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/Category" }
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "required": true },
+                "slug": { "type": "string", "required": false },
+                "description": { "type": "string", "required": false },
+                "type": { "type": "string", "enum": ["selectbox", "radio", "range"], "required": true },
+                "options": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "required": false
+                },
+                "min": { "type": "number", "required": false },
+                "max": { "type": "number", "required": false }
+              },
+              "required": ["name", "type"]
+            },
+            "description": "Array of filter objects for the category"
           }
         }
       }
@@ -2713,12 +2725,267 @@
                       "properties": {
                         "categories": {
                           "type": "array",
-                          "items": { "$ref": "#/components/schemas/Category" }
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "_id": { "type": "string" },
+                              "title": { "type": "string" },
+                              "slug": { "type": "string" },
+                              "filters": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": { "type": "string" },
+                                    "slug": { "type": "string" },
+                                    "type": { "type": "string", "enum": ["selectbox", "radio", "range"] },
+                                    "options": {
+                                      "type": "array",
+                                      "items": { "type": "string" }
+                                    },
+                                    "_id": { "type": "string" }
+                                  }
+                                }
+                              },
+                              "__v": { "type": "integer" },
+                              "subCategories": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "_id": { "type": "string" },
+                                    "title": { "type": "string" },
+                                    "slug": { "type": "string" },
+                                    "parent": { "type": "string" },
+                                    "filters": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "name": { "type": "string" },
+                                          "slug": { "type": "string" },
+                                          "type": { "type": "string", "enum": ["selectbox", "radio", "range"] },
+                                          "options": {
+                                            "type": "array",
+                                            "items": { "type": "string" }
+                                          },
+                                          "_id": { "type": "string" }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
                         }
                       }
                     }
                   },
                   "required": ["success", "statusCode", "message", "data"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new category",
+        "description": "Create a new category. Only admins can create categories.",
+        "tags": ["Categories 📂"],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Electronics",
+                    "description": "Title of the category"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "example": "electronics",
+                    "description": "URL-friendly slug for the category"
+                  },
+                  "parent": {
+                    "type": "string",
+                    "example": "67bf56225c2b2cf388a9524f",
+                    "description": "ID of the parent category (optional)"
+                  },
+                  "filters": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "color",
+                          "description": "Name of the filter"
+                        },
+                        "slug": {
+                          "type": "string",
+                          "example": "mobile-version-color",
+                          "description": "Slug for the filter"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "selectbox",
+                          "description": "Type of the filter"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": ["white", "blue", "black"],
+                          "description": "Options for the filter"
+                        }
+                      },
+                      "required": ["name", "slug", "type", "options"]
+                    },
+                    "description": "Array of filter objects for the category"
+                  }
+                },
+                "required": ["title", "slug"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 201 },
+                    "message": {
+                      "type": "string",
+                      "example": "Category created successfully !!"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "category": { "$ref": "#/components/schemas/Category" }
+                      }
+                    }
+                  },
+                  "required": ["success", "statusCode", "message", "data"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Various validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid parent category ID"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Category title already exists"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Category slug already exists"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Not an admin",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Parent category not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "Parent category not found"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
                 }
               }
             }
