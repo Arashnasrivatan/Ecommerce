@@ -91,15 +91,30 @@ exports.addAddress = async (req, res, next) => {
 
 exports.getAddress = async (req, res, next) => {
   try {
-    const user = req.user;
     const { id } = req.params;
+    const { user_id } = req.query;
+    const isAdmin = req.user.role === "ADMIN";
 
     if (!isValidObjectId(id)) {
-      return response(res, 400, "Invalid ID");
+      return response(res, 400, "Invalid address id");
+    }
+
+    let user;
+    if (isAdmin && user_id) {
+      if (!isValidObjectId(user_id)) {
+        return response(res, 400, "Invalid user_id");
+      }
+      user = await User.findById(user_id);
+    } else {
+      user = await User.findById(req.user._id);
+    }
+
+    if (!user) {
+      return response(res, 404, "User not found");
     }
 
     const addresses = user.addresses.filter((addr) => {
-      return addr._id == req.params.id;
+      return addr._id.toString() === id;
     });
 
     if (!addresses.length) {

@@ -1892,7 +1892,7 @@
             "name": "user_id",
             "in": "query",
             "required": false,
-            "description": "ID of the user to get addresses for (admin only)",
+            "description": "ID of the user whose addresses to retrieve (admin only)",
             "schema": {
               "type": "string"
             }
@@ -2102,6 +2102,18 @@
                         "statusCode": { "type": "integer", "example": 400 },
                         "message": {
                           "type": "string",
+                          "example": "Location must be within Iran"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
                           "example": "An address with this name already exists"
                         }
                       },
@@ -2115,18 +2127,6 @@
                         "message": {
                           "type": "string",
                           "example": "An address with this postal code already exists"
-                        }
-                      },
-                      "required": ["success", "statusCode", "message"]
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "success": { "type": "boolean", "example": false },
-                        "statusCode": { "type": "integer", "example": 400 },
-                        "message": {
-                          "type": "string",
-                          "example": "Location must be within Iran"
                         }
                       },
                       "required": ["success", "statusCode", "message"]
@@ -2156,7 +2156,10 @@
                   "properties": {
                     "success": { "type": "boolean", "example": false },
                     "statusCode": { "type": "integer", "example": 404 },
-                    "message": { "type": "string", "example": "User not found" }
+                    "message": {
+                      "type": "string",
+                      "example": "User not found"
+                    }
                   },
                   "required": ["success", "statusCode", "message"]
                 }
@@ -2184,6 +2187,9 @@
           }
         }
       }
+    },
+    "/api/users/addresses/{id}": {
+      
     }
   }
 }
