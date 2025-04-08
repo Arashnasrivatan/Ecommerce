@@ -134,10 +134,13 @@ exports.editSubCategory = async (req, res, next) => {
 
     const subCategory = await SubCategory.findByIdAndUpdate(
       categoryId,
-      title,
-      slug,
-      parent,
-      filters
+      {
+        title,
+        slug,
+        parent,
+        filters,
+      },
+      { new: true }
     );
 
     if (!subCategory) {

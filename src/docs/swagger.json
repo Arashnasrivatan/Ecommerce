@@ -3830,6 +3830,261 @@
           }
         }
       },
+      "patch": {
+        "summary": "Update a subcategory",
+        "description": "Update an existing subcategory. Only admins can update subcategories.",
+        "tags": ["SubCategories 📂"],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the subcategory to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Updated Smartphones",
+                    "description": "New title for the subcategory"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "example": "updated-smartphones",
+                    "description": "New URL-friendly slug for the subcategory"
+                  },
+                  "parent": {
+                    "type": "string",
+                    "example": "67bf56225c2b2cf388a9524f",
+                    "description": "ID of the new parent category"
+                  },
+                  "filters": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "color",
+                          "description": "Name of the filter"
+                        },
+                        "slug": {
+                          "type": "string",
+                          "example": "mobile-version-color",
+                          "description": "Slug for the filter"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "selectbox",
+                          "description": "Type of the filter"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": ["white", "blue", "black"],
+                          "description": "Options for the filter"
+                        }
+                      }
+                    },
+                    "description": "Array of filter objects for the subcategory"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subcategory updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "SubCategory updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "subCategory": {
+                          "type": "object",
+                          "properties": {
+                            "_id": { "type": "string" },
+                            "title": { "type": "string" },
+                            "slug": { "type": "string" },
+                            "parent": { "type": "string" },
+                            "filters": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": { "type": "string" },
+                                  "slug": { "type": "string" },
+                                  "type": { "type": "string" },
+                                  "options": {
+                                    "type": "array",
+                                    "items": { "type": "string" }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["success", "statusCode", "message", "data"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Various validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid Category ID !!"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Parent ID or its a main category is not correct !!"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Title already exists for this category !!"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "success": { "type": "boolean", "example": false },
+                        "statusCode": { "type": "integer", "example": 400 },
+                        "message": {
+                          "type": "string",
+                          "example": "Slug already exists for this category !!"
+                        }
+                      },
+                      "required": ["success", "statusCode", "message"]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 403 },
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Subcategory not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "SubCategory not found !!"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "summary": "Delete a subcategory",
         "description": "Delete a specific subcategory. Only admins can delete subcategories.",
