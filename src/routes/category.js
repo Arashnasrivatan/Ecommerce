@@ -36,7 +36,7 @@ router
     controller.editCategory
   );
 
-  //* Sub Sub category Routes
+//* Sub Sub category Routes
 router
   .route("/sub")
   .get(subController.getAllSubCategories)
