@@ -182,7 +182,11 @@
                 "name": { "type": "string", "required": true },
                 "slug": { "type": "string", "required": false },
                 "description": { "type": "string", "required": false },
-                "type": { "type": "string", "enum": ["selectbox", "radio", "range"], "required": true },
+                "type": {
+                  "type": "string",
+                  "enum": ["selectbox", "radio", "range"],
+                  "required": true
+                },
                 "options": {
                   "type": "array",
                   "items": { "type": "string" },
@@ -2738,7 +2742,10 @@
                                   "properties": {
                                     "name": { "type": "string" },
                                     "slug": { "type": "string" },
-                                    "type": { "type": "string", "enum": ["selectbox", "radio", "range"] },
+                                    "type": {
+                                      "type": "string",
+                                      "enum": ["selectbox", "radio", "range"]
+                                    },
                                     "options": {
                                       "type": "array",
                                       "items": { "type": "string" }
@@ -2764,7 +2771,14 @@
                                         "properties": {
                                           "name": { "type": "string" },
                                           "slug": { "type": "string" },
-                                          "type": { "type": "string", "enum": ["selectbox", "radio", "range"] },
+                                          "type": {
+                                            "type": "string",
+                                            "enum": [
+                                              "selectbox",
+                                              "radio",
+                                              "range"
+                                            ]
+                                          },
                                           "options": {
                                             "type": "array",
                                             "items": { "type": "string" }
@@ -2983,6 +2997,145 @@
                     "message": {
                       "type": "string",
                       "example": "Parent category not found"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/category/{categoryId}": {
+      "delete": {
+        "summary": "Delete a category",
+        "description": "Delete a category and its subcategories. Only admins can delete categories.",
+        "tags": ["Categories 📂"],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the category to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Category and its subcategories deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "category": { "$ref": "#/components/schemas/Category" },
+                        "deletedSubcategories": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Category" }
+                        },
+                        "deletedSubSubCategories": {
+                          "type": "object",
+                          "properties": {
+                            "deletedCount": { "type": "integer" }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["success", "statusCode", "message", "data"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid category ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 400 },
+                    "message": {
+                      "type": "string",
+                      "example": "Category ID is not valid !!"
+                    }
+                  },
+                  "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Not an admin",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "Category not found !!"
                     }
                   },
                   "required": ["success", "statusCode", "message"]
