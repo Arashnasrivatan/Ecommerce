@@ -203,27 +203,68 @@
       },
       "Product": {
         "type": "object",
+        "required": [
+          "name",
+          "description",
+          "subCategory",
+          "stock",
+          "priceInRial",
+          "images",
+          "filterValues"
+        ],
         "properties": {
           "_id": { "type": "string" },
           "name": {
             "type": "string",
-            "required": true,
-            "trim": true
+            "description": "Product name (must be unique)",
+            "example": "Samsung Galaxy S21"
           },
           "description": {
             "type": "string",
-            "required": true,
-            "trim": true
+            "description": "Product description",
+            "example": "Latest Samsung smartphone with 5G capability"
           },
           "subCategory": {
             "type": "string",
-            "required": true,
-            "description": "ID of the subcategory"
+            "description": "ID of the subcategory",
+            "example": "67bf6cf9f83bfb029ebe4a83"
+          },
+          "stock": {
+            "type": "integer",
+            "description": "Available stock quantity",
+            "example": 50
+          },
+          "priceInRial": {
+            "type": "number",
+            "description": "Price in Iranian Rial",
+            "example": 15000000
+          },
+          "filterValues": {
+            "type": "array",
+            "description": "Array of filter values (each object must have exactly one key)",
+            "items": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "example": { "color": "black" }
+            }
+          },
+          "customFields": {
+            "type": "array",
+            "description": "Array of custom fields (each object must have exactly one key)",
+            "items": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "example": { "warranty": "2 years" }
+            }
           },
           "images": {
             "type": "array",
-            "items": { "type": "string" },
-            "required": true
+            "description": "Array of image URLs",
+            "items": { "type": "string" }
           },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
@@ -233,7 +274,7 @@
   },
   "security": [
     {
-      "BearerAuth": []
+      "AccessToken": []
     }
   ],
   "paths": {
@@ -4280,7 +4321,7 @@
           {
             "name": "name",
             "in": "query",
-            "description": "Filter products by name",
+            "description": "Filter products by name (case-insensitive)",
             "schema": { "type": "string" }
           },
           {
@@ -4347,22 +4388,8 @@
                           }
                         },
                         "products": {
-                          "type": "object",
-                          "properties": {
-                            "_id": { "type": "string" },
-                            "name": { "type": "string" },
-                            "description": { "type": "string" },
-                            "subCategory": { "type": "string" },
-                            "images": { "type": "array", "items": { "type": "string" } },
-                            "stock": { "type": "integer" },
-                            "priceInRial": { "type": "number" },
-                            "filterValues": { "type": "array", "items": { "type": "object" } },
-                            "customFields": { "type": "array", "items": { "type": "object" } },
-                            "createdAt": { "type": "string", "format": "date-time" },
-                            "updatedAt": { "type": "string", "format": "date-time" },
-                            "__v": { "type": "integer" },
-                            "averageRating": { "type": "number" }
-                          }
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Product" }
                         }
                       }
                     }
@@ -4370,9 +4397,95 @@
                 }
               }
             }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Products 🛍️"],
+        "summary": "Create a new product",
+        "security": [{ "AccessToken": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "description",
+                  "subCategory",
+                  "stock",
+                  "priceInRial",
+                  "images"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Product name (must be unique)",
+                    "example": "Samsung Galaxy S21"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Product description",
+                    "example": "Latest Samsung smartphone with 5G capability"
+                  },
+                  "subCategory": {
+                    "type": "string",
+                    "description": "ID of the subcategory",
+                    "example": "67bf6d06f83bfb029ebe4a8d"
+                  },
+                  "stock": {
+                    "type": "integer",
+                    "description": "Available stock quantity",
+                    "example": 50
+                  },
+                  "priceInRial": {
+                    "type": "number",
+                    "description": "Price in Iranian Rial",
+                    "example": 15000000
+                  },
+                  "filterValues": {
+                    "type": "string",
+                    "description": "JSON string of filter values array",
+                    "example": "[{\"color\": \"black\"}, {\"storage\": \"256GB\"}]"
+                  },
+                  "customFields": {
+                    "type": "string",
+                    "description": "JSON string of custom fields array",
+                    "example": "[{\"warranty\": \"2 years\"}]"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": { "type": "string", "format": "binary" },
+                    "description": "Product images (at least one required)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 201 },
+                    "message": {
+                      "type": "string",
+                      "example": "Product created successfully"
+                    },
+                    "data": { "$ref": "#/components/schemas/Product" }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Invalid request parameters",
+            "description": "Invalid request data",
             "content": {
               "application/json": {
                 "schema": {
@@ -4381,24 +4494,6 @@
                     "success": { "type": "boolean", "example": false },
                     "statusCode": { "type": "integer", "example": 400 },
                     "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "example": false },
-                    "statusCode": { "type": "integer", "example": 500 },
-                    "message": {
-                      "type": "string",
-                      "example": "Internal Server Error"
-                    }
                   }
                 }
               }

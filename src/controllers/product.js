@@ -19,6 +19,8 @@ exports.createProduct = async (req, res, next) => {
 
     let { filterValues, customFields } = req.body;
 
+    console.log(filterValues);
+
     try {
       filterValues = JSON.parse(filterValues);
 
@@ -40,6 +42,10 @@ exports.createProduct = async (req, res, next) => {
         "parent"
       );
 
+      if (!subSubCategory) {
+        return response(res, 404, "sub-sub-category not found");
+      }
+
       const allFilters = [];
 
       if (subSubCategory?.filters) {
@@ -54,16 +60,22 @@ exports.createProduct = async (req, res, next) => {
         const filterValue = filterItem[filterName];
 
         const filterDefinition = allFilters.find((f) => {
-          return (
-            f.name.trim().toLowerCase() === filterName.trim().toLowerCase()
-          );
+          const filterNameLower = filterName.trim().toLowerCase();
+          const availableFilterNameLower = f.name.trim().toLowerCase();
+          return filterNameLower === availableFilterNameLower;
         });
 
         if (!filterDefinition) {
+          console.log("Filter not found:", {
+            requestedFilter: filterName,
+            availableFilters: allFilters.map((f) => {return f.name}),
+          });
           return response(
             res,
             400,
-            `Filter '${filterName}' is not allowed in this category.`
+            `Filter '${filterName}' is not allowed in this category. Available filters: ${allFilters
+              .map((f) => {return f.name})
+              .join(", ")}`
           );
         }
 
@@ -124,7 +136,7 @@ exports.createProduct = async (req, res, next) => {
       }
     } catch (err) {
       console.log(err);
-      return response(res, 400, "Invalid filterValues format");
+      return response(res, 400, "an Error occurred while parsing filterValues");
     }
 
     if (customFields) {
@@ -468,16 +480,26 @@ exports.updateProduct = async (req, res, next) => {
           const filterValue = filterItem[filterName];
 
           const filterDefinition = allFilters.find((f) => {
-            return (
-              f.name.trim().toLowerCase() === filterName.trim().toLowerCase()
-            );
+            const filterNameLower = filterName.trim().toLowerCase();
+            const availableFilterNameLower = f.name.trim().toLowerCase();
+            return filterNameLower === availableFilterNameLower;
           });
 
           if (!filterDefinition) {
+            console.log("Filter not found:", {
+              requestedFilter: filterName,
+              availableFilters: allFilters.map((f) => {
+                return f.name;
+              }),
+            });
             return response(
               res,
               400,
-              `Filter '${filterName}' is not allowed in this category.`
+              `Filter '${filterName}' is not allowed in this category. Available filters: ${allFilters
+                .map((f) => {
+                  return f.name;
+                })
+                .join(", ")}`
             );
           }
 
