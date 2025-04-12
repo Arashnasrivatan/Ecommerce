@@ -200,6 +200,34 @@
             "description": "Array of filter objects for the category"
           }
         }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": {
+            "type": "string",
+            "required": true,
+            "trim": true
+          },
+          "description": {
+            "type": "string",
+            "required": true,
+            "trim": true
+          },
+          "subCategory": {
+            "type": "string",
+            "required": true,
+            "description": "ID of the subcategory"
+          },
+          "images": {
+            "type": "array",
+            "items": { "type": "string" },
+            "required": true
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
       }
     }
   },
@@ -4237,6 +4265,141 @@
                     }
                   },
                   "required": ["success", "statusCode", "message"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "tags": ["Products 🛍️"],
+        "summary": "Get all products with pagination and filtering",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Filter products by name",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "subCategory",
+            "in": "query",
+            "description": "Filter products by sub-category ID",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "Filter products by minimum price",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "Filter products by maximum price",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "filterValues",
+            "in": "query",
+            "description": "Filter products by specific filter values (JSON string)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": { "type": "integer", "default": 15 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Products Fetched Successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": { "type": "integer" },
+                            "limit": { "type": "integer" },
+                            "total": { "type": "integer" },
+                            "totalPages": { "type": "integer" }
+                          }
+                        },
+                        "products": {
+                          "type": "object",
+                          "properties": {
+                            "_id": { "type": "string" },
+                            "name": { "type": "string" },
+                            "description": { "type": "string" },
+                            "subCategory": { "type": "string" },
+                            "images": { "type": "array", "items": { "type": "string" } },
+                            "stock": { "type": "integer" },
+                            "priceInRial": { "type": "number" },
+                            "filterValues": { "type": "array", "items": { "type": "object" } },
+                            "customFields": { "type": "array", "items": { "type": "object" } },
+                            "createdAt": { "type": "string", "format": "date-time" },
+                            "updatedAt": { "type": "string", "format": "date-time" },
+                            "__v": { "type": "integer" },
+                            "averageRating": { "type": "number" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 400 },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
                 }
               }
             }
