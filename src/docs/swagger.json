@@ -4587,6 +4587,174 @@
             }
           }
         }
+      },
+      "patch": {
+        "tags": ["Products 🛍️"],
+        "summary": "Update an existing product",
+        "security": [{ "AccessToken": [] }],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the product to update",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Product name (must be unique)",
+                    "example": "Samsung Galaxy S21"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Product description",
+                    "example": "Latest Samsung smartphone with 5G capability"
+                  },
+                  "subCategory": {
+                    "type": "string",
+                    "description": "ID of the subcategory",
+                    "example": "67bf6cf9f83bfb029ebe4a83"
+                  },
+                  "stock": {
+                    "type": "integer",
+                    "description": "Available stock quantity",
+                    "example": 50
+                  },
+                  "priceInRial": {
+                    "type": "number",
+                    "description": "Price in Iranian Rial",
+                    "example": 15000000
+                  },
+                  "filterValues": {
+                    "type": "string",
+                    "description": "JSON string of filter values array (each object must have exactly one key)",
+                    "example": "[{\"color\": \"black\"}, {\"storage\": \"256GB\"}]"
+                  },
+                  "customFields": {
+                    "type": "string",
+                    "description": "JSON string of custom fields array (each object must have exactly one key)",
+                    "example": "[{\"warranty\": \"2 years\"}]"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": { "type": "string", "format": "binary" },
+                    "description": "Product images (optional for update)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Product updated successfully"
+                    },
+                    "data": { "$ref": "#/components/schemas/Product" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 400 },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 401 },
+                    "message": { "type": "string", "example": "Unauthorized" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 403 },
+                    "message": { "type": "string", "example": "Forbidden" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
