@@ -330,33 +330,33 @@
         }
       },
       "Reply": {
-      "properties": {
-        "user": {
-          "type": "string",
-          "description": "ID of the user who replied",
-          "example": "60d5ec49f1b2c8b1f8c8e4a3"
-        },
-        "content": {
-          "type": "string",
-          "description": "Content of the reply",
-          "example": "I agree with you!"
-        },
-        "replyTo": {
-          "type": "string",
-          "description": "ID of the comment this reply is addressing",
-          "example": "60d5ec49f1b2c8b1f8c8e4a4"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Timestamp when the reply was created"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Timestamp when the reply was last updated"
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "ID of the user who replied",
+            "example": "60d5ec49f1b2c8b1f8c8e4a3"
+          },
+          "content": {
+            "type": "string",
+            "description": "Content of the reply",
+            "example": "I agree with you!"
+          },
+          "replyTo": {
+            "type": "string",
+            "description": "ID of the comment this reply is addressing",
+            "example": "60d5ec49f1b2c8b1f8c8e4a4"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the reply was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the reply was last updated"
+          }
         }
-      }
       }
     }
   },
@@ -5167,7 +5167,10 @@
                         "product": { "type": "string" },
                         "rating": { "type": "integer" },
                         "content": { "type": "string" },
-                        "replies": { "type": "array", "items": { "$ref": "#/components/schemas/Reply" } },
+                        "replies": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Reply" }
+                        },
                         "createdAt": {
                           "type": "string",
                           "format": "date-time"
@@ -5214,6 +5217,168 @@
                     "message": {
                       "type": "string",
                       "example": "Product not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/comments/all": {
+      "get": {
+        "tags": ["Comments 💬"],
+        "summary": "Get all comments (Admin only)",
+        "security": [{ "AccessToken": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comments fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Comments fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": { "type": "string" },
+                            "limit": { "type": "string" },
+                            "totalPage": { "type": "integer" },
+                            "totalComments": { "type": "integer" }
+                          }
+                        },
+                        "comments": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "_id": { "type": "string" },
+                              "user": {
+                                "type": "object",
+                                "properties": {
+                                  "_id": { "type": "string" },
+                                  "fullname": { "type": "string" },
+                                  "username": { "type": "string" },
+                                  "role": { "type": "string" }
+                                }
+                              },
+                              "product": {
+                                "type": "object",
+                                "properties": {
+                                  "_id": { "type": "string" },
+                                  "name": { "type": "string" }
+                                }
+                              },
+                              "rating": { "type": "integer" },
+                              "content": { "type": "string" },
+                              "replies": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/Reply"
+                                }
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "__v": { "type": "integer" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed - Invalid credentials",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 403 },
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No comments found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "No comments found"
                     }
                   }
                 }
