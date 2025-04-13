@@ -328,6 +328,35 @@
             "description": "Timestamp when the comment was last updated"
           }
         }
+      },
+      "Reply": {
+      "properties": {
+        "user": {
+          "type": "string",
+          "description": "ID of the user who replied",
+          "example": "60d5ec49f1b2c8b1f8c8e4a3"
+        },
+        "content": {
+          "type": "string",
+          "description": "Content of the reply",
+          "example": "I agree with you!"
+        },
+        "replyTo": {
+          "type": "string",
+          "description": "ID of the comment this reply is addressing",
+          "example": "60d5ec49f1b2c8b1f8c8e4a4"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the reply was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the reply was last updated"
+        }
+      }
       }
     }
   },
@@ -5069,14 +5098,137 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Comments 💬"],
+        "summary": "Create a new comment",
+        "security": [{ "AccessToken": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["product", "rating", "content"],
+                "properties": {
+                  "product": {
+                    "type": "string",
+                    "description": "ID of the product to comment on",
+                    "example": "60d5ec49f1b2c8b1f8c8e4a1"
+                  },
+                  "rating": {
+                    "type": "integer",
+                    "description": "Rating from 1 to 5",
+                    "minimum": 1,
+                    "maximum": 5,
+                    "example": 4
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Comment content",
+                    "example": "Great product, highly recommend!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 201 },
+                    "message": {
+                      "type": "string",
+                      "example": "Comment created successfully"
                     },
-                    "statusCode": {
-                      "type": "integer",
-                      "example": 500
-                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string" },
+                        "user": { "type": "string" },
+                        "product": { "type": "string" },
+                        "rating": { "type": "integer" },
+                        "content": { "type": "string" },
+                        "replies": { "type": "array", "items": { "$ref": "#/components/schemas/Reply" } },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "__v": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid product ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 400 },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid product ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
                     "message": {
                       "type": "string",
                       "example": "Internal Server Error"
