@@ -16,9 +16,9 @@ exports.getComments = async (req, res, next) => {
     if (!product) return response(res, 404, "Product not found");
 
     const comments = await Comment.find({ product: productId })
-      .populate("product", "name")
       .populate("user", "fullname username role")
       .populate("replies.user", "fullname username role")
+      .select("-product")
       .lean();
     if (!comments) return response(res, 404, "Comments not found");
 
@@ -30,17 +30,20 @@ exports.getComments = async (req, res, next) => {
       "Comments"
     );
 
-    const buildReplyTree = (replies, parentId = null) =>
-      {return replies
-        .filter((reply) =>
-          {return parentId
+    const buildReplyTree = (replies, parentId = null) => {
+      return replies
+        .filter((reply) => {
+          return parentId
             ? reply.replyTo && reply.replyTo.toString() === parentId.toString()
-            : !reply.replyTo}
-        )
-        .map((reply) => {return {
-          ...reply,
-          children: buildReplyTree(replies, reply._id),
-        }})};
+            : !reply.replyTo;
+        })
+        .map((reply) => {
+          return {
+            ...reply,
+            children: buildReplyTree(replies, reply._id),
+          };
+        });
+    };
 
     const commentsWithNestedReplies = comments.map((comment) => {
       const nestedReplies = buildReplyTree(comment.replies);
@@ -113,17 +116,20 @@ exports.getAllComments = async (req, res, next) => {
       "Comments"
     );
 
-    const buildReplyTree = (replies, parentId = null) =>
-      {return replies
-        .filter((reply) =>
-          {return parentId
+    const buildReplyTree = (replies, parentId = null) => {
+      return replies
+        .filter((reply) => {
+          return parentId
             ? reply.replyTo && reply.replyTo.toString() === parentId.toString()
-            : !reply.replyTo}
-        )
-        .map((reply) => {return {
-          ...reply,
-          children: buildReplyTree(replies, reply._id),
-        }})};
+            : !reply.replyTo;
+        })
+        .map((reply) => {
+          return {
+            ...reply,
+            children: buildReplyTree(replies, reply._id),
+          };
+        });
+    };
 
     const commentsWithNestedReplies = comments.map((comment) => {
       const nestedReplies = buildReplyTree(comment.replies);
@@ -281,9 +287,9 @@ exports.updateReply = async (req, res, next) => {
       return response(res, 404, "Comment not found");
     }
 
-    const reply = comment.replies.find(
-      (reply) => {return reply._id.toString() === replyId.toString()}
-    );
+    const reply = comment.replies.find((reply) => {
+      return reply._id.toString() === replyId.toString();
+    });
 
     if (!reply) {
       return response(res, 404, "Reply not found");
@@ -301,7 +307,9 @@ exports.updateReply = async (req, res, next) => {
       res,
       200,
       "Reply updated successfully",
-      updatedComment.replies.find((reply) => {return reply._id.toString() === replyId})
+      updatedComment.replies.find((reply) => {
+        return reply._id.toString() === replyId;
+      })
     );
   } catch (err) {
     next(err);
@@ -340,7 +348,9 @@ exports.deleteReply = async (req, res, next) => {
       res,
       200,
       "Reply deleted successfully",
-      updatedComment.replies.find((reply) => {return reply._id.toString() === replyId})
+      updatedComment.replies.find((reply) => {
+        return reply._id.toString() === replyId;
+      })
     );
   } catch (err) {
     next(err);

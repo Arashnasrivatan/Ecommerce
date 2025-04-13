@@ -269,6 +269,65 @@
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
         }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "type": "string",
+            "description": "ID of the product being commented on",
+            "example": "60d5ec49f1b2c8b1f8c8e4a1"
+          },
+          "user": {
+            "type": "string",
+            "description": "ID of the user who made the comment",
+            "example": "60d5ec49f1b2c8b1f8c8e4a2"
+          },
+          "rating": {
+            "type": "integer",
+            "description": "Rating given by the user (1 to 5)",
+            "example": 4
+          },
+          "content": {
+            "type": "string",
+            "description": "Content of the comment",
+            "example": "Great product, highly recommend!"
+          },
+          "replies": {
+            "type": "array",
+            "description": "Array of replies to the comment",
+            "items": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "string",
+                  "description": "ID of the user who replied",
+                  "example": "60d5ec49f1b2c8b1f8c8e4a3"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "Content of the reply",
+                  "example": "I agree with you!"
+                },
+                "replyTo": {
+                  "type": "string",
+                  "description": "ID of the comment this reply is addressing",
+                  "example": "60d5ec49f1b2c8b1f8c8e4a4"
+                }
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the comment was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the comment was last updated"
+          }
+        }
       }
     }
   },
@@ -4861,6 +4920,163 @@
                   "properties": {
                     "success": { "type": "boolean", "example": false },
                     "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/comments": {
+      "get": {
+        "tags": ["Comments 💬"],
+        "summary": "Get comments for a specific product",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "query",
+            "required": true,
+            "description": "ID of the product to get comments for",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comments fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Comments fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": { "type": "string" },
+                          "user": {
+                            "type": "object",
+                            "properties": {
+                              "_id": { "type": "string" },
+                              "fullname": { "type": "string" },
+                              "username": { "type": "string" },
+                              "role": { "type": "string" }
+                            }
+                          },
+                          "rating": { "type": "integer" },
+                          "content": { "type": "string" },
+                          "replies": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "user": {
+                                  "type": "object",
+                                  "properties": {
+                                    "_id": { "type": "string" },
+                                    "fullname": { "type": "string" },
+                                    "username": { "type": "string" },
+                                    "role": { "type": "string" }
+                                  }
+                                },
+                                "content": { "type": "string" },
+                                "replyTo": { "type": ["string", "null"] },
+                                "_id": { "type": "string" },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "updatedAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "children": { "type": "array", "items": {} }
+                              }
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "__v": { "type": "integer" },
+                          "repliesCount": { "type": "integer" },
+                          "pagination": {
+                            "type": "object",
+                            "properties": {
+                              "page": { "type": "string" },
+                              "limit": { "type": "string" },
+                              "totalPage": { "type": "integer" },
+                              "totalComments": { "type": "integer" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
                     "message": {
                       "type": "string",
                       "example": "Internal Server Error"
