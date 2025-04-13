@@ -6001,6 +6001,137 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": ["Comments 💬"],
+        "summary": "Delete a reply (Admin only)",
+        "description": "Delete a reply from a comment. Only administrators can delete replies.",
+        "security": [{ "AccessToken": [] }],
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the parent comment",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "replyId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the reply to delete",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reply deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Reply deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string" },
+                        "user": { "type": "string" },
+                        "content": { "type": "string" },
+                        "replyTo": { "type": "string", "nullable": true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 400 },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid comment ID or reply ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed - Invalid credentials",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 403 },
+                    "message": { "type": "string", "example": "Forbidden" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "Comment or reply not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
