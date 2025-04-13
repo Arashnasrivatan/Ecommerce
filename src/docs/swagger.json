@@ -5405,6 +5405,178 @@
           }
         }
       }
+    },
+    "/api/comments/{commentId}": {
+      "patch": {
+        "tags": ["Comments 💬"],
+        "summary": "Update a comment",
+        "security": [{ "AccessToken": [] }],
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the comment to update",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "description": "ID of the user (admin only)",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "Updated comment content",
+                    "example": "Updated comment content"
+                  },
+                  "rating": {
+                    "type": "integer",
+                    "description": "Updated rating from 1 to 5",
+                    "minimum": 1,
+                    "maximum": 5,
+                    "example": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "statusCode": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Comment Updated Successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string" },
+                        "user": { "type": "string" },
+                        "product": { "type": "string" },
+                        "rating": { "type": "integer" },
+                        "content": { "type": "string" },
+                        "replies": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Reply" }
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "__v": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 400 },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid comment id"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed - Invalid credentials",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 403 },
+                    "message": {
+                      "type": "string",
+                      "example": "You Dont have access to edit this comment"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 404 },
+                    "message": {
+                      "type": "string",
+                      "example": "comment not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "statusCode": { "type": "integer", "example": 500 },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
