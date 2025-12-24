@@ -1,4 +1,5 @@
 # ignoring node_modules
 node_modules
-.env
-public/images
+production.env
+dist
+/logs
